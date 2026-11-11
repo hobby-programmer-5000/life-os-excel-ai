@@ -109,3 +109,19 @@
 |:---|:---|:---|
 | **エージェントハーネス** | **Google Research Harness²** ([github.com/google-research/harness2](https://github.com/google-research/harness2)) | 不変コア（35習慣DB＆NLPエンジン）と実行ハーネス（SQLite・Excel同期・Tkinter UI・トレイ/ホットキー・Bot連携）を分離し、`Propose → Probe → Compose` を適用 ([HARNESS_SPEC.ja.md](HARNESS_SPEC.ja.md))。 |
 | **ローカル永続化** | SQLite WAL ＋ `openpyxl` Dual Sync | デスクトップ・Telegram・Discord・Webhook の同時アクセス下でもロック衝突を防ぎ Excel 数式を保護します。 |
+
+---
+
+## 🎨 モダンミニマル UI ＆ HCI デザイン参考文献
+
+常駐ウィジェット特有の過剰な装飾（多色ネオン枠線・絵文字乱用・AI Slop 感）を排し、落ち着いた日用ツールへ再設計するため、[`ui_theme.py`](ui_theme.py)・[`app_icon.py`](app_icon.py)・[`floating_widget.py`](floating_widget.py) は以下の一次文献に基づいています。
+
+| 原則・コンセプト | 著者・出典（Primary Sources） | 本UIでの適用 |
+|:---|:---|:---|
+| **「より少なく、しかしより良く」(*Less, but better*)** | Dieter Rams, *Ten Principles for Good Design* (Braun / Vitsœ — *Good design is unobtrusive / as little design as possible*) | 過剰な色彩や装飾を削ぎ落とし、習慣記録の本質だけを抑えた無彩色サーフェス上に配置しました。 |
+| **データ・インク比 ＆ チャートジャンク排除** | Edward R. Tufte, *The Visual Display of Quantitative Information* (1983 / 2001) | シアン/紫/黄の多色枠線やビットマップ絵文字を廃し、統一された `1px` `#27272A` ヘアラインとベクターアイコンに置換しました。 |
+| **カーム・テクノロジー（穏やかな技術）** | Mark Weiser & John Seely Brown, *Designing Calm Technology* (Xerox PARC, 1995) | 画面隅に常駐しても中心視野を奪わないマットなオブシディアン（`#09090B`）/ジンク（`#111216`）基調と透過スライダーを採用しました。 |
+| **認知負荷理論（外在的認知負荷の低減）** | John Sweller, *"Cognitive Load During Problem Solving: Effects on Learning"*, *Cognitive Science* (1988) | 統一されたカード境界とダーク入力欄で視覚ノイズを抑え、エメラルド（`#10B981`）を完了・稼働状態の識別のみに限定しました。 |
+| **グリッドシステム ＆ タイポグラフィ階層** | Josef Müller-Brockmann, *Grid Systems in Graphic Design / Raster Systeme* (1968 / 1981) | ヘッダー・日付バー・ナッジカード・チェックリスト・入力欄・フッターを整然としたグリッドリズムとコントラストで整列させました。 |
+| **ミニマリズム・ヒックの法則・単一主要 CTA** | Nielsen Norman Group (Jakob Nielsen & Don Norman) ・ 60-30-10 中立ダークトークン体系 | 画面内の主行動ボタン1つ（オフホワイト `#F4F4F5` の `送信`/`保存`、エメラルド `#059669` の `完了`）のみを強調し、補助ボタンはゴーストヘアライン化しました。 |
+| **商用利用可能な無料ベクター素材** | [Lucide Icons](https://lucide.dev) (`ISC License`) ＋ Feather (`MIT License`) — [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) | 29種の公式 SVG アイコンを純粋 Python ラスタライザで描画し、OS 依存絵文字に頼らない鮮明な UI を実現しています。 |

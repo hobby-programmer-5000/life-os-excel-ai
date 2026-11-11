@@ -107,5 +107,21 @@ Sustainable high performance cannot come from work productivity alone. Cognitive
 
 | Domain | Reference / Pattern | How It Is Applied Here |
 |:---|:---|:---|
-| **Agent Harness Architecture** | **Google Research Harness²** ([github.com/google-research/harness2](https://github.com/google-research/harness2)) | Separates the stable core (35 habits & NLP/LLM matcher) from execution harnesses (SQLite timeline, Excel sync, Tkinter floating UI, OS tray/hotkey, bot bridges) using `Propose → Probe → Compose` ([`HARNESS_SPEC.md`](HARNESS_SPEC.md)). |
+| **Agent Harness Architecture** | **Google Research Harness²** ([github.com/google-research/harness2](https://github.com/google-research/harness2)) | Separates the stable core (35 habits & local offline NLP matcher) from execution harnesses (SQLite timeline, Excel sync, Tkinter floating UI, OS tray/hotkey, bot bridges) using `Propose → Probe → Compose` ([`HARNESS_SPEC.md`](HARNESS_SPEC.md)). |
 | **Local Data Persistence** | SQLite WAL + `openpyxl` Dual Sync | Ensures concurrent desktop widget, Telegram, Discord, and LAN webhook access remains lock-safe while keeping Excel formulas intact. |
+
+---
+
+## 🎨 Modern Minimal UI & HCI Research References
+
+To eliminate noisy "AI slop" ornamentation (multi-hue borders, stacked emoji glyphs, competing CTAs) and keep daily habit tracking calm on an always-visible desktop window, [`ui_theme.py`](ui_theme.py), [`app_icon.py`](app_icon.py), and [`floating_widget.py`](floating_widget.py) are grounded in these primary HCI and design references:
+
+| Principle / Concept | Author & Primary Work | Concrete Application in This UI |
+|:---|:---|:---|
+| **"Less, but better" (*Weniger, aber besser*)** | Dieter Rams, *Ten Principles for Good Design* (Braun / Vitsœ — *"Good design is unobtrusive"*, *"Good design is as little design as possible"*) | Strips decorative chrome and multi-color gradients; exposes only daily essentials through a calm, self-effacing matte surface. |
+| **Data-Ink Ratio & Anti-Chartjunk** | Edward R. Tufte, *The Visual Display of Quantitative Information* (1983 / 2001) | Eliminates rainbow borders (`#38BDF8`/`#818CF8`/`#F59E0B` card frames) and bitmap button emojis in favor of uniform `1px` `#27272A` hairlines and clean text/icon primitives. |
+| **Calm Technology** | Mark Weiser & John Seely Brown, *Designing Calm Technology* (Xerox PARC, 1995) | Keeps the floating companion in peripheral calm (Obsidian `#09090B` / Zinc `#111216`, adjustable opacity, soft semantic states) without demanding central visual stress. |
+| **Cognitive Load Theory (Extraneous Load)** | John Sweller, *"Cognitive Load During Problem Solving: Effects on Learning"*, *Cognitive Science* (1988) | Reduces visual search friction by enforcing consistent neutral card grouping, dark form inputs, and restrained semantic emerald (`#10B981`) reserved for completion/live state. |
+| **Grid Systems & Typographic Hierarchy** | Josef Müller-Brockmann, *Grid Systems in Graphic Design / Raster Systeme* (1968 / 1981) | Organizes header, date navigation, nudge card, habit list, input bar, and footer along disciplined spatial hierarchy and legible monochrome typographic contrast. |
+| **Minimalism · Hick's Law · Single-CTA Focus** | Nielsen Norman Group (Jakob Nielsen & Don Norman) & 60-30-10 Neutral Dark Surface Allocation | Differentiates ONE primary action per surface (off-white `#F4F4F5` `Send`/`Save`, emerald `#059669` `Done`) from flat hairline secondary ghost controls (`#18181B` `Do Now` / `Later` / `Verify`). |
+| **Commercially Free Vector Stock** | [Lucide Icons](https://lucide.dev) (`ISC License`) + Feather (`MIT License`) — [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) | Replaces platform-dependent emoji buttons with 29 uniform geometric stroke SVGs rendered natively via a pure-Python vector rasterizer. |

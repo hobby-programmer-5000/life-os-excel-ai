@@ -21,12 +21,15 @@
 2. **Local-First Excel Ownership (`Life_OS_Successful_Habits.xlsx`):**  
    Instead of locking your life logs inside a paid closed platform, all metrics live in a local SQLite WAL database (`life_os.db`) synced two-way with a **5-sheet formula-driven Excel workbook**.
 3. **Zero-Friction Desktop Assistant (`LifeOS_Assistant_v2.exe`):**  
-   A lightweight translucent floating widget (`30%–100%` real-time slider), system tray app, global hotkey (`Ctrl + Shift + H`), time-of-day smart nudges, and free local multilingual NLP check-ins (with optional Grok / OpenAI / Gemini API support).
+   A lightweight translucent floating widget (`30%–100%` real-time slider), system tray app, global hotkey (`Ctrl + Shift + H`), time-of-day smart nudges, and **100% offline local 4-language NLP check-ins** (zero API tokens or external paid keys required).
 
 ---
 
 ## ✨ Key Highlights
 
+* **🎨 Modern Minimal "Anti-Slop" UI (`ui_theme.py`, `floating_widget.py`, `app_icon.py`):**
+  * Calm **60-30-10 Obsidian & Zinc** surface hierarchy with `1px` hairlines, zero neon/emoji clutter, and single-CTA focus grounded in primary HCI literature ([REFERENCES.md](REFERENCES.md)).
+  * Powered by **29 commercially free Lucide SVG icons** (`ISC License`, see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)) and a unified **Growth Graph** desktop icon.
 * **🖥️ Floating Desktop Widget & Tray App (`main_app.py`, `floating_widget.py`):**
   * Frameless always-on-top widget with **real-time horizontal opacity slider (`30%–100%`)** (live preview + revert on cancel).
   * **Global Hotkey (`Ctrl + Shift + H`)** + soft chime audio & OS toast reminders.
@@ -47,10 +50,10 @@
 ## 📁 Project Structure
 
 * **Core & Storage:** [`ai_secretary.py`](ai_secretary.py) · [`database.py`](database.py) · [`assistant_engine.py`](assistant_engine.py) · [`generate_excel.py`](generate_excel.py)
-* **Desktop UI & Packaging:** [`main_app.py`](main_app.py) · [`floating_widget.py`](floating_widget.py) · [`tray_manager.py`](tray_manager.py) · [`hotkey_manager.py`](hotkey_manager.py) · [`build_exe.py`](build_exe.py)
+* **Modern Minimal UI & Packaging:** [`main_app.py`](main_app.py) · [`floating_widget.py`](floating_widget.py) · [`ui_theme.py`](ui_theme.py) · [`tray_manager.py`](tray_manager.py) · [`hotkey_manager.py`](hotkey_manager.py) · [`app_icon.py`](app_icon.py) · [`build_exe.py`](build_exe.py)
 * **Localization (`ko/en/ja/zh`):** [`i18n.py`](i18n.py) · [`i18n_habits.py`](i18n_habits.py) · [`i18n_personas.py`](i18n_personas.py)
 * **Mobile Bots & Bridge:** [`telegram_bot.py`](telegram_bot.py) · [`discord_bot.py`](discord_bot.py) · [`bot_commands.py`](bot_commands.py) · [`bot_bridge.py`](bot_bridge.py)
-* **Docs & Tests:** [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md) · [`REFERENCES.md`](REFERENCES.md) · [`HARNESS_SPEC.md`](HARNESS_SPEC.md) · [`BOT_INTEGRATION_GUIDE.md`](BOT_INTEGRATION_GUIDE.md) · [`test_regression_suite.py`](test_regression_suite.py) · [`test_e2e_scenarios.py`](test_e2e_scenarios.py)
+* **Docs, Notices & Tests:** [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md) · [`REFERENCES.md`](REFERENCES.md) · [`HARNESS_SPEC.md`](HARNESS_SPEC.md) · [`BOT_INTEGRATION_GUIDE.md`](BOT_INTEGRATION_GUIDE.md) · [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) · [`test_regression_suite.py`](test_regression_suite.py) · [`test_e2e_scenarios.py`](test_e2e_scenarios.py)
 
 ---
 
@@ -105,7 +108,8 @@ python ai_secretary.py --review
 ## 📖 Development Story & Guides
 
 * [🛠️ Development History & Role Division (`DEVELOPMENT_HISTORY.md`)](DEVELOPMENT_HISTORY.md) — How this project evolved step-by-step from an Excel template to a multilingual Harness² desktop & bot ecosystem, including the full human–AI contributor breakdown.
-* [📚 Scientific Citations & Book References (`REFERENCES.md`)](REFERENCES.md) · [📐 Harness² Architecture Specification (`HARNESS_SPEC.md`)](HARNESS_SPEC.md)
+* [📚 Scientific & Modern Minimal UI/HCI Citations (`REFERENCES.md`)](REFERENCES.md) · [📐 Harness² Architecture Specification (`HARNESS_SPEC.md`)](HARNESS_SPEC.md)
+* [📜 Third-Party Notices & Free Stock Credits (`THIRD-PARTY-NOTICES.md`)](THIRD-PARTY-NOTICES.md) — Full attribution for commercially free **Lucide Icons** (`ISC License` / Feather `MIT License`).
 * [🤖 Telegram · Discord · Android/iPhone Setup Guide (`BOT_INTEGRATION_GUIDE.md`)](BOT_INTEGRATION_GUIDE.md)
 
 ---
@@ -114,13 +118,13 @@ python ai_secretary.py --review
 
 | Contributor | Role | Key Ownership |
 | :--- | :--- | :--- |
-| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · Real-Device QA** | 7-domain × 35-habit framework vision, Harness²/Excel ownership philosophy, desktop & mobile real-device UX critiques (date labels, time-of-day nudge filtering, live opacity slider), security/open-ecosystem scope decisions, release verification |
-| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · Full-Stack & QA Engineer** | Core Python modules, SQLite WAL & 3-Way Sync, Tkinter floating UI & system tray, 4-language i18n, Telegram/Discord/LAN webhook implementation, PyInstaller bundle privacy verification, 25-case regression & 7-step E2E suites, sandbox demos & multilingual docs |
+| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · UX/UI Director · Real-Device QA** | 7-domain × 35-habit framework vision, Harness²/Excel ownership philosophy, external LLM removal (zero-token local NLP), **Modern Minimal ("Anti-Slop") UI direction** & unified Growth Graph icon, commercially free stock/UI-literature standards, real-device & desktop UX critiques, security/open-ecosystem scope & MIT licensing |
+| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · Full-Stack, UI & QA Engineer** | [`ui_theme.py`](ui_theme.py) (60-30-10 tokens + W3C SVG rasterizer), 29 Lucide SVG integration, full Tkinter UI redesign, Python core + SQLite WAL 3-Way Sync, 4-language i18n, Telegram/Discord/LAN webhook implementation, PyInstaller bundle privacy verification, automated regression/E2E suites, sandbox demos & multilingual docs/notices |
 
 > Full phase-by-phase breakdown: [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md)
 
 ---
 
-## 📄 License
+## 📄 License & Third-Party Stock Credits
 
-Released under the [MIT License](LICENSE).
+Released under the [MIT License](LICENSE). Desktop interface & app icons incorporate **Lucide Icons** ([lucide.dev](https://lucide.dev), `ISC License` / Feather `MIT License`) listed in [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md).

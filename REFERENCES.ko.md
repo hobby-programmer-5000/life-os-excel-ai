@@ -109,3 +109,19 @@
 |:---|:---|:---|
 | **에이전트 하네스 설계** | **Google Research Harness²** ([github.com/google-research/harness2](https://github.com/google-research/harness2)) | 변하지 않는 핵심 규칙(35대 습관 DB & 분석 코어)과 환경 하네스(SQLite 타임라인·엑셀 동기화·Tkinter 플로팅 UI·트레이/레지스트리·봇 브릿지)를 분리하고 `Propose → Probe → Compose` 검증 사이클을 적용 ([HARNESS_SPEC.ko.md](HARNESS_SPEC.ko.md)). |
 | **로컬 데이터 영속성** | SQLite WAL (Write-Ahead Logging) + `openpyxl` Dual Sync | 데스크톱 위젯·텔레그램/디스코드 봇·HTTP 웹훅이 동시 접근해도 잠금 충돌 없이 동작하며 엑셀 수식/차트를 안전하게 유지합니다. |
+
+---
+
+## 🎨 모던 미니멀 UI & HCI 디자인 참고문헌
+
+바탕화면에 상시 띄워 두는 비서 위젯에서 과장된 "AI slop" 장식(형광 다색 테두리, 버튼 이모지 남발, 색채 충돌)을 제거하고 차분한 일상 도구로 재구성하기 위해, [`ui_theme.py`](ui_theme.py)·[`app_icon.py`](app_icon.py)·[`floating_widget.py`](floating_widget.py) 설계에 아래 HCI·디자인 원전을 반영했습니다.
+
+| 디자인 원리 / 개념 | 저자 및 원전 (Primary Sources) | 프로젝트 UI 적용 내용 |
+|:---|:---|:---|
+| **"적지만 더 좋게" (*Weniger, aber besser*)** | Dieter Rams, *Ten Principles for Good Design* (Braun / Vitsœ — *"좋은 디자인은 눈에 거슬리지 않는다"*, *"가능한 한 최소한의 디자인"*) | 과잉 장식과 다색 그라디언트를 덜어내고, 습관 점검에 필요한 최소한의 구조만 차분한 무채색 표면 위에 남겼습니다. |
+| **데이터-잉크 비율 & 차트정크 배제** | Edward R. Tufte, *The Visual Display of Quantitative Information* (1983 / 2001) | 형광 시안/퍼플/골드 카드 테두리와 버튼 내 비트맵 이모지를 제거하고, `1px` `#27272A` 헤어라인과 명료한 텍스트/벡터 아이콘으로 대체했습니다. |
+| **차분한 기술 (Calm Technology)** | Mark Weiser & John Seely Brown, *Designing Calm Technology* (Xerox PARC, 1995) | 항상 화면 한쪽에 머무르는 위젯이 중심 시선을 빼앗지 않도록 매트 옵시디언(`#09090B`) / 징크(`#111216`) 배경·실시간 투명도·절제된 시맨틱 상태를 적용했습니다. |
+| **인지 부하 이론 (외재적 부하 최소화)** | John Sweller, *"Cognitive Load During Problem Solving: Effects on Learning"*, *Cognitive Science* (1988) | 일관된 카드 경계와 어두운 입력 폼으로 시각적 잡음을 줄이고, 에메랄드(`#10B981`)는 '완료·실행 중' 상태 표시에만 한정했습니다. |
+| **그리드 시스템 & 타이포그래피 위계** | Josef Müller-Brockmann, *Grid Systems in Graphic Design / Raster Systeme* (1968 / 1981) | 헤더 · 날짜 탐색 · 넛지 카드 · 빠른 체크리스트 · 입력바 · 하단 툴바를 정돈된 수직·수평 리듬과 모노크롬 대비로 정렬했습니다. |
+| **미니멀리즘 · 힉의 법칙 · 단일 CTA 위계** | Nielsen Norman Group (Jakob Nielsen & Don Norman) · 60-30-10 다크 뉴트럴 토큰 체계 | 화면당 핵심 행동 버튼 1개(`Send`/`Save` 오프화이트 `#F4F4F5`, `완료` 절제된 에메랄드 `#059669`)만 강조하고 보조 액션(`지금 할게`·`보류`·`확인`)은 고스트 헤어라인 버튼으로 낮췄습니다. |
+| **상업적 이용 가능 무료 스톡 아이콘** | [Lucide Icons](https://lucide.dev) (`ISC License`) + Feather (`MIT License`) — [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) | 29종의 오픈소스 SVG 벡터 아이콘을 내장하고 순수 파이썬 벡터 래스터라이저로 안티앨리어싱 렌더링해 OS 간 일관성을 확보했습니다. |

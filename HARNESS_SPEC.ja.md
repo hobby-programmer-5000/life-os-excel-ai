@@ -18,7 +18,7 @@ Google Research の **Harness²** は、モデル本体ではなく周囲の **�
 │                           HARNESS² SYSTEM MODEL                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   [Fixed Core] ─── 35大成功習慣マスターDB ＆ 多言語 NLP / LLM 解析エンジン    │
+│   [Fixed Core] ─── 35大成功習慣マスターDB ＆ オフライン多言語 NLP エンジン  │
 │         ▲                                                                   │
 │         │ (Contract / Data Invariant)                                       │
 │         ▼                                                                   │

@@ -14,7 +14,7 @@
   ├─► 1) Telegram Bot (/start, /status, /nudge, /review, /昨天, 自然语言) [外出移动网络主推]
   ├─► 2) Discord 内置 Bot (私信自动回复 · 专用 Channel ID · @提及 / !status / !nudge)
   ├─► 3) Android HTTP Request Shortcuts / MacroDroid · Wi-Fi iPhone 快捷指令 · 本地 Webhook (/checkin)
-  └─► 4) CLI / Grok·OpenAI·Gemini 官方 LLM API 模式
+  └─► 4) CLI 模式 & 100% 离线四语言本地 NLP 引擎（零 API 令牌消耗）
          │
          ▼
 [Life OS 统一核心 (AssistantEngine + DatabaseManager + i18n)]
@@ -30,7 +30,7 @@
 
 无需额外搭建服务器、端口映射或内网穿透，在 **`LifeOS_Assistant_v2.exe`** 内部即可直接开关：
 
-1. 右键桌面悬浮窗（或点击 `⚙️` → **`🌐 手机 Bot / API 集成...`**）
+1. 右键桌面悬浮窗（或点击 `⚙️` → **`🌐 机器人与Webhook...`**）
 2. 勾选需要启用的服务，点击 **`[保存并立即应用连接]`**：
    - **Telegram AI 助手 Bot：** 只需一个 `@BotFather` Token，即可在外网（4G/5G）全天候后台接收（HTTP Long-Polling）
    - **Discord AI 助手 Bot：** 无需任何穿透工具，使用纯 Python Gateway v10 (WSS) + REST 直连 Discord
@@ -86,7 +86,7 @@
 4. 关闭设置（`ESC`），**右键 `#habit-checkin` → 最底部 `复制频道 ID`**
 
 #### 4) 在 Life OS 应用填写并启用
-1. 打开 **`LifeOS_Assistant_v2.exe`** → 右键悬浮窗 → **`🌐 手机 Bot / API 集成...`**
+1. 打开 **`LifeOS_Assistant_v2.exe`** → 右键悬浮窗 → **`🌐 移动机器人 / Webhook 设置`**
 2. 向下找到 **Discord 卡片**：
    * **`Bot Token:`** 粘贴第1步的令牌 → 点击 **`[测试连接]`** 确认显示连接成功
    * **`专用 Channel ID (可选):`**
@@ -138,6 +138,5 @@
 
 ---
 
-### 🔹 方式 D：Grok / OpenAI / Gemini 官方 LLM API 接入
-1. 在 **`🌐 手机 Bot / API 集成...`** 或 `.env` 中配置模型提供方（`grok`、`openai`、`gemini`）与 API Key。
-2. 即使不使用预设关键词，LLM 也能将口语化句子精准映射至对应习惯编号并输出导师风格反馈。（未配置或离线时自动切换回零成本本地多语言引擎。）
+### 🔹 内置 100% 离线多语言本地 NLP 引擎（零 Token 费用）
+所有自然语言习惯匹配（`ai_secretary.py` / `LocalHabitNLP`）及导师评语均 **完全在本地离线运行**，无需填写任何付费外部 LLM API 密钥或消耗额度。点击悬浮窗内的 **`[?]`** 按钮即可检索并一键填入中英日韩关键词。

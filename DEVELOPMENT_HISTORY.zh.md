@@ -13,7 +13,7 @@
 * **实现内容：**
   * [`generate_excel.py`](generate_excel.py)：自动生成 5 张工作表（`📊 仪表盘`、`🏆 成功习惯库`、`📅 每日追踪表`、`📈 每周复盘`、`🤖 AI助手日志`），并在百余处统计公式中添加 `IFERROR` 保护，彻底避免空表初期出现 `#DIV/0!` 报错。
   * [`REFERENCES.zh.md`](REFERENCES.zh.md)：系统标注全部 35 项习惯的原著出处与科学机制。
-  * [`ai_secretary.py`](ai_secretary.py)：实现支持一句话识别多项习惯的离线 NLP 引擎，以及可选官方 LLM API 客户端（Grok / OpenAI / Gemini）。
+  * [`ai_secretary.py`](ai_secretary.py)：实现支持一句话识别多项习惯并生成导师反馈的 100% 离线 4 语言本地 NLP 引擎（`LocalHabitNLP`）。
 
 ---
 
@@ -55,19 +55,28 @@
   * **Telegram 机器人 ([`telegram_bot.py`](telegram_bot.py))：** 零外部依赖的 HTTP Long-Polling 后台轮询与 `@BotFather` 防仿冒官方验证提示卡片。
   * **内置 Discord 机器人 ([`discord_bot.py`](discord_bot.py), [`bot_commands.py`](bot_commands.py))：** 纯 Python 标准库实现 RFC 6455 TLS WebSocket（Gateway v10）+ REST API，无需安装 `discord.py` 或内网穿透；文档化了最新版入口（`⚙️ → </> 开发者 → 开发者模式`）、`Clyde` 私信限制排查以及 `专用 Channel ID` 机制。
   * **Android 与 Wi-Fi 备用 iPhone Webhook ([`bot_bridge.py`](bot_bridge.py))：** 经 Android (`HTTP Request Shortcuts`) 与 Wi-Fi 备用 iPhone (`快捷指令`) 真机实测，沉淀出 **Windows `公用(Public)`→`专用(Private)` 防火墙策略**、**`http://` 替代 `https://` 防 TLS 包头错误**、**`Custom Text` (`application/json`) + 英文直引号** 等关键避坑指南。
-  * **设置卡片顺序梳理：** 将移动端设置面板卡片排序与引导文档顺序统一为 `Telegram → Discord → 本地 Webhook → LLM API`。
+  * **本地 NLP 优化 · 三卡片简化 · 增长曲线图标统一:** 经 4 语言日常口语实测后强化 `LocalHabitNLP` 标点正则化与分离词组匹配，彻底移除付费外部 LLM API 项（`Telegram → Discord → 本地 Webhook`），并通过 [`app_icon.py`](app_icon.py) 将 `.exe` 可执行文件、系统托盘与所有弹窗图标统一为增长曲线图标。
   * **打包与仓库隐私护栏 ([`.gitignore`](.gitignore), [`build_exe.py`](build_exe.py))：** 严禁推送或打包个人 `*.db`、`*.xlsx`、`.env`、`*.spec`、`build/`、`dist/`，并在编译 `.exe` 后自动审计二进制归档（`verify_clean_exe_bundle`）。
+
+---
+
+### Phase 6. 现代极简「反 AI 廉价感」UI 重构 · 可商用免费矢量素材与设计文献体系
+* **UX 批评与重构方向：** 为彻底摆脱多色霓虹边框（`#38BDF8` / `#818CF8` / `#F59E0B`）、按钮表情堆砌与刺眼白底表单带来的“AI slop”廉价感，在 Product Owner 主导下，项目依据权威 HCI 与经典设计文献（[`REFERENCES.zh.md`](REFERENCES.zh.md)：Dieter Rams、Edward Tufte、Weiser & Brown 平静技术、John Sweller、Josef Müller-Brockmann、Nielsen Norman Group）实施了全面的 **现代极简 UI（Modern Minimal UI）** 改造，并严格选用可商用开源免费图标素材与规范署名。
+* **落地实现与像素级审查：**
+  * **60-30-10 黑曜石-锌灰配色体系与纯 Python 矢量光栅引擎 ([`ui_theme.py`](ui_theme.py))：** 构建沉稳哑光深色令牌（`#09090B` / `#111216` / `#18181B`）、统一 `1px` `#27272A` 细线轮廓、暗色表单与 `ttk` 样式、克制的单一主 CTA（`#F4F4F5`/`#09090B`）、仅保留予完成/在线语义的翡翠绿（`#10B981`/`#059669`），以及纯 Python 实现的 W3C SVG 路径/弧线/贝塞尔抗锯齿光栅器。
+  * **可商用免费开源素材与版权声明 ([`assets/icons/lucide/`](assets/icons/lucide/), [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md))：** 内置 29 枚官方 **Lucide SVG 图标**（`ISC License` 含 Feather `MIT License`），清理桌面浮窗与多语言提示中的多余 Emoji（[`floating_widget.py`](floating_widget.py), [`i18n.py`](i18n.py), [`assistant_engine.py`](assistant_engine.py)），并将增长曲线应用图标（[`app_icon.py`](app_icon.py)）与打包脚本（[`build_exe.py`](build_exe.py)）完整对齐。
+  * **全界面截图走查修复：** 在中英日韩 4 语沙盒环境中实拍校验主浮窗、系统设置、3 卡片 Bot 设置、35 项全量清单与关键词手册，修正了长文本语言页眉关闭按钮被挤压及长行右侧文本溢出的布局细节。
 
 ---
 
 ## 👥 共同贡献与角色分工（Contributors & Role Division）
 
-本项目由人类开发者（**Product Owner / 架构与真机审校**）与 AI 结对编程助手（**实现与自动化验证**）以清晰分工的 Human-in-the-loop 模式共同完成：
+本项目由人类开发者（**Product Owner / UX·UI 总监与真机审校**）与 AI 结对编程助手（**全栈与 UI 工程实现 / 设计文献调研 / 自动化验证**）以清晰分工的 Human-in-the-loop 模式共同完成：
 
 | 贡献者 | 角色 (Role) | 核心负责领域 (Owned Contributions) |
 | :--- | :--- | :--- |
-| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · 领域架构 · 真机测试** | • **产品愿景与领域设计：** 梳理 7 大领域 × 35 项成功习惯体系，确立用户本地 Excel 主权与桌面悬浮协同架构<br>• **Harness² 与交互方向：** 提出 Harness² 工程落地方向，定义 4 大导师人格、主动提醒及自然语言打卡体验<br>• **桌面 UX 评审与重构要求：** 指出非当日界面按钮歧义（`◀ 昨天/明天 ▶` vs `◀ 前一天/后一天 ▶`）、排查凌晨睡前习惯误推、提出 `30%–100%` 实时横向透明度滑块及 Bot 配置卡片重排<br>• **真机验证与安全边界把关：** 决策聚焦开放官方 API 并移除封闭/非官方渠道，开展 Android (`HTTP Request Shortcuts`) 与 iPhone Wi-Fi (`快捷指令`) 真机联调并定位 `http://` / `Custom Text JSON` / 防火墙关键细节，制定严格的零隐私/零令牌防泄漏发布标准<br>• **发布验收与多语言策略：** 统筹 4 语言演示录制、全文档多语言覆盖及第三方平台界面变更风险提示 |
-| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI 结对编程工程师 · 全栈与自动化测试** | • **核心后端与算法实现：** 编写 [`generate_excel.py`](generate_excel.py)、[`database.py`](database.py)（SQLite WAL・跨天漫游・三向同步）、[`ai_secretary.py`](ai_secretary.py)、[`assistant_engine.py`](assistant_engine.py) 及 `HABIT_ALLOWED_HOURS` 分时段过滤逻辑<br>• **桌面悬浮窗与 OS 集成：** 实现 [`floating_widget.py`](floating_widget.py)、[`tray_manager.py`](tray_manager.py)、[`hotkey_manager.py`](hotkey_manager.py)、[`main_app.py`](main_app.py)（动态日期按钮、实时 `tk.Scale` 透明度条、可搜索 `[?]` 手册）<br>• **4 语言 i18n 架构：** 开发 [`i18n.py`](i18n.py)、[`i18n_habits.py`](i18n_habits.py)、[`i18n_personas.py`](i18n_personas.py) (`en`/`ko`/`ja`/`zh`) 全界面、跨语种识别、Excel 表适配与语言热切换，及 `.exe` 多语言元数据<br>• **移动端 Bot 与桥接服务：** 实现 [`telegram_bot.py`](telegram_bot.py)、[`discord_bot.py`](discord_bot.py)（纯标准库 RFC 6455 TLS WebSocket Gateway v10）、[`bot_commands.py`](bot_commands.py) 与 [`bot_bridge.py`](bot_bridge.py)<br>• **打包审计、沙盒演示与测试：** 完善 [`build_exe.py`](build_exe.py) + `verify_clean_exe_bundle`，录制隔离沙盒多语言演示（`assets/demo_*.gif/.mp4`），构建 25 项回归测试 [`test_regression_suite.py`](test_regression_suite.py) 与 7 步 E2E 套件 [`test_e2e_scenarios.py`](test_e2e_scenarios.py) 并编写多语言文档 |
+| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · 领域架构 · UX/UI 总监 · 真机测试** | • **产品愿景与领域设计：** 梳理 7 大领域 × 35 项成功习惯体系，确立用户本地 Excel 主权与桌面悬浮协同架构<br>• **Harness² 与零付费纯本地路线：** 推动 Harness² 工程落地与 4 大导师人格，决策全面移除外部付费 LLM API 改为纯本地多语种 NLP<br>• **现代极简 UI（Anti-Slop）与开源合规标准：** 否定花哨 AI 模板配色，制定以 HCI 经典文献为基础的现代极简改造目标，选定统一增长曲线应用图标，要求必须采用可商用免费素材并沉淀完整声明（[`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md)）与设计文献索引（[`REFERENCES.zh.md`](REFERENCES.zh.md)）<br>• **桌面 UX 评审与真机验证：** 发现非当日导航歧义（`◀ 昨天/明天 ▶` vs `◀ 前一天/后一天 ▶`）、凌晨误推、实时横滑透明度条（`30%–100%`），开展 Android (`HTTP Request Shortcuts`) 与 Wi-Fi iPhone (`快捷指令`) 真机联调，把关零隐私/零令牌发布安全红线<br>• **开源协议与演示策略：** 选定 MIT License，统筹 4 语言演示录制与文档体系 |
+| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI 结对编程工程师 · 全栈、UI 与自动化测试** | • **现代极简主题与纯 Python 矢量引擎：** 编写 [`ui_theme.py`](ui_theme.py)（60-30-10 深色令牌 + W3C SVG 光栅引擎），集成 29 枚 Lucide SVG 图标，全面重构 [`app_icon.py`](app_icon.py) 与 [`floating_widget.py`](floating_widget.py)，清理 [`i18n.py`](i18n.py)/[`assistant_engine.py`](assistant_engine.py) 冗余表情，撰写 [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) 与 HCI 设计参考文献<br>• **核心后端与算法实现：** 编写 [`generate_excel.py`](generate_excel.py)、[`database.py`](database.py)（SQLite WAL・跨天漫游・三向同步）、[`ai_secretary.py`](ai_secretary.py)（`LocalHabitNLP`）、[`assistant_engine.py`](assistant_engine.py) 及 `HABIT_ALLOWED_HOURS` 分时段过滤逻辑<br>• **桌面悬浮窗与 OS 集成：** 实现 [`floating_widget.py`](floating_widget.py)、[`tray_manager.py`](tray_manager.py)、[`hotkey_manager.py`](hotkey_manager.py)、[`main_app.py`](main_app.py)<br>• **4 语言 i18n 架构：** 开发 [`i18n.py`](i18n.py)、[`i18n_habits.py`](i18n_habits.py)、[`i18n_personas.py`](i18n_personas.py) (`en`/`ko`/`ja`/`zh`) 全界面、跨语种识别、Excel 适配与语言热切换，及 `.exe` 多语言元数据<br>• **Bot 桥接、隐私打包与测试集：** 实现 [`telegram_bot.py`](telegram_bot.py)、[`discord_bot.py`](discord_bot.py)（纯标准库 RFC 6455 TLS WebSocket Gateway v10）、[`bot_commands.py`](bot_commands.py)、[`bot_bridge.py`](bot_bridge.py)、[`build_exe.py`](build_exe.py) + `verify_clean_exe_bundle`、沙盒演示录制（`assets/demo_*.gif/.mp4`）、[`test_regression_suite.py`](test_regression_suite.py) 与 [`test_e2e_scenarios.py`](test_e2e_scenarios.py) |
 
 ---
 

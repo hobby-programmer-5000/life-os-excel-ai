@@ -14,7 +14,7 @@ A check-in sent from your phone while away immediately updates both your PC widg
   ├─► 1) Telegram Bot (/start, /status, /nudge, /review, /yesterday, natural text) [Best over LTE/5G]
   ├─► 2) Discord Built-in Bot (DM auto-reply · Dedicated Channel ID · @mention / !status / !nudge)
   ├─► 3) Android HTTP Request Shortcuts / MacroDroid · Wi-Fi iPhone Shortcuts · Local Webhook (/checkin)
-  └─► 4) CLI / Official LLM API Mode (Grok · OpenAI · Gemini)
+  └─► 4) CLI Mode & 100% Offline Local Multilingual NLP Engine (Zero API Tokens Required)
          │
          ▼
 [Life OS Unified Core (AssistantEngine + DatabaseManager + i18n)]
@@ -30,7 +30,7 @@ A check-in sent from your phone while away immediately updates both your PC widg
 
 Without running external servers, port forwarding, or tunnels, configure everything inside **`LifeOS_Assistant_v2.exe`**:
 
-1. Right-click the floating widget (or click `⚙️` → **`🌐 Mobile Bot / API Setup...`**)
+1. Right-click the floating widget (or click `⚙️` → **`🌐 Mobile Bots & Webhook...`**) → **`🌐 Mobile Bot & Webhook Settings`**
 2. Toggle the channels you want and click **`[Save & Connect Live]`**:
    - **Telegram AI Assistant Bot:** Works over external cellular/Wi-Fi using only an official `@BotFather` token (HTTP Long-Polling).
    - **Discord AI Assistant Bot:** Connects directly via Gateway v10 (WSS) + REST using a Discord Developer Portal token — no external tunnel needed.
@@ -86,7 +86,7 @@ Connects directly via pure Python stdlib RFC 6455 TLS WebSocket (**Gateway v10**
 4. Close settings (`ESC`), **right-click `#habit-checkin` → `Copy Channel ID`** at the bottom.
 
 #### 4) Register Token & Channel ID in Life OS
-1. Open **`LifeOS_Assistant_v2.exe`** → right-click widget → **`🌐 Mobile Bot / API Setup...`**.
+1. Open **`LifeOS_Assistant_v2.exe`** → right-click widget → **`🌐 Mobile Bot & Webhook Settings`**.
 2. Scroll to the **Discord** card:
    * **`Bot Token:`** Paste your token → click **`[Test Connection]`** → confirm `Connected (@YourBot)`.
    * **`Dedicated Channel ID (Optional):`**
@@ -138,6 +138,5 @@ Use one-tap home-screen check-in buttons on **Android**, an **auxiliary Wi-Fi iP
 
 ---
 
-### 🔹 Method D: Official LLM API Integration (Grok / OpenAI / Gemini)
-1. Configure your provider (`grok`, `openai`, `gemini`) and API key in **`🌐 Mobile Bot / API Setup...`** or `.env`.
-2. Even phrasing outside preset keywords maps accurately to the 35 habits with persona coaching. *(When unconfigured or offline, the free built-in multilingual keyword engine takes over seamlessly.)*
+### 🔹 Built-in Offline Local Multilingual NLP (Zero Token Cost)
+All natural-language habit recognition (`ai_secretary.py` / `LocalHabitNLP`) and mentor coaching run **100% locally offline** without external LLM API keys or recurring token fees. Click **`[?]`** inside the floating widget to inspect or insert any keyword in English, Korean, Japanese, or Simplified Chinese.

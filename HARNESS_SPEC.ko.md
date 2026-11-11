@@ -18,7 +18,7 @@ Google Research의 **Harness²**는 LLM 자체를 수정하는 대신 모델을 
 │                           HARNESS² SYSTEM MODEL                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   [Fixed Core] ─── 35대 거인 습관 DB & 다국어 자연어 / LLM 분석 엔진         │
+│   [Fixed Core] ─── 35대 거인 습관 DB & 오프라인 다국어 로컬 NLP 엔진       │
 │         ▲                                                                   │
 │         │ (Contract / Data Invariant)                                       │
 │         ▼                                                                   │
@@ -72,7 +72,7 @@ Google Research의 **Harness²**는 LLM 자체를 수정하는 대신 모델을 
   2. ⚡ **앤드루 후버만** (신경과학 & 생체리듬/도파민 프로토콜)
   3. 🚀 **일론 머스크 & Grok** (제1원칙 사고 & 위트 있는 직설 코칭)
   4. 🧠 **마르쿠스 아우렐리우스** (스토아 철학 & 통제의 이분법 평정심)
-- **개방형 모바일 봇 & 듀얼 NLP/LLM**: 무료 로컬 다국어 NLP + 선택적 Grok/OpenAI/Gemini API, 그리고 Telegram · Discord Gateway v10 · LAN HTTP 웹훅 지원.
+- **개방형 모바일 봇 & 오프라인 로컬 NLP**: API 토큰 없이 무료로 동작하는 4개 국어 로컬 NLP 엔진과 Telegram · Discord Gateway v10 · LAN HTTP 웹훅 지원.
 - **Standalone Binary Packaging (`build_exe.py`)**: Python 미설치 PC에서도 실행되는 `LifeOS_Assistant_v2.exe` 빌드 및 `verify_clean_exe_bundle` 프라이버시 자동 감사 내장.
 
 ---

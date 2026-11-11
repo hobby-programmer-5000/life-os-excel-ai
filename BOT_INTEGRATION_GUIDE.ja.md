@@ -14,7 +14,7 @@
   ├─► 1) Telegram Bot (/start, /status, /nudge, /review, /昨日, 自然文) [外出先 LTE/5G 推奨]
   ├─► 2) Discord 内蔵 Bot (DM 自動応答・専用チャンネルID・@メンション / !status / !nudge)
   ├─► 3) Android HTTP Request Shortcuts / MacroDroid · Wi-Fi iPhone ショートカット · ローカル Webhook (/checkin)
-  └─► 4) CLI / 公式 LLM API モード (Grok · OpenAI · Gemini)
+  └─► 4) CLI モード ＆ 100% オフライン多言語ローカル NLP エンジン（API トークン不要）
          │
          ▼
 [Life OS 統合コア (AssistantEngine + DatabaseManager + i18n)]
@@ -30,7 +30,7 @@
 
 別ターミナルや外部公開サーバー（トンネル・ポート開放）を用意しなくても、`LifeOS_Assistant_v2.exe` 画面内からそのまま有効化できます：
 
-1. 浮動ウィジェットを右クリック（または `⚙️` → **`🌐 モバイルBot / API 連携...`**）
+1. 浮動ウィジェットを右クリック（または `⚙️` → **`🌐 モバイルBot / Webhook...`**）
 2. 使いたい連携をオンにして **`[保存して即時接続]`** をクリック：
    - **Telegram AI アシスタント Bot:** `@BotFather` のトークンだけで外部回線（LTE/5G）からも常時受信可能（HTTP Long-Polling）
    - **Discord AI アシスタント Bot:** 外部トンネル不要で Discord Gateway v10（WSS）+ REST に直接接続
@@ -86,7 +86,7 @@
 4. 設定を閉じて（`ESC`）、作成した **`#habit-checkin` を右クリック → `チャンネル ID をコピー`**
 
 #### 4) Life OS アプリへ登録・接続確認
-1. **`LifeOS_Assistant_v2.exe`** 上で右クリック → **`🌐 モバイルBot / API 連携...`**
+1. **`LifeOS_Assistant_v2.exe`** 上で右クリック → **`🌐 モバイルBot / Webhook設定`**
 2. **Discord** カードで以下を入力します：
    * **`Bot Token:`** 手順1のトークンを貼り付け → **`[接続テスト]`** で接続確認
    * **`専用 Channel ID（任意）:`**
@@ -138,6 +138,5 @@
 
 ---
 
-### 🔹 方法 D: Grok / OpenAI / Gemini 公式 LLM API 連携
-1. **`🌐 モバイルBot / API 連携...`** または `.env` にてプロバイダ（`grok`・`openai`・`gemini`）と API キーを設定します。
-2. 登録外キーワードの自由表現でも LLM が 35習慣へ文脈マッピングし、巨匠ペルソナで返信します。（未設定またはオフライン時は無料のローカル多言語エンジンが自動フォールバック動作します。）
+### 🔹 100% オフライン多言語ローカル NLP（API トークン消費ゼロ）
+自然文からの習慣抽出（`ai_secretary.py` / `LocalHabitNLP`）およびメンター別コーチングは、外部の有料 LLM API キーや課金トークンを一切消費せず **ローカルで完結して動作**します。ウィジェットの **`[?]`** から全35習慣の認識キーワードも検索・入力できます。

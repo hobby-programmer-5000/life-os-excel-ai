@@ -30,10 +30,10 @@
 ## 📁 프로젝트 파일 구성
 
 * **코어 & 데이터베이스:** [`ai_secretary.py`](ai_secretary.py) · [`database.py`](database.py) · [`assistant_engine.py`](assistant_engine.py) · [`generate_excel.py`](generate_excel.py)
-* **데스크톱 UI & 빌드:** [`main_app.py`](main_app.py) · [`floating_widget.py`](floating_widget.py) · [`tray_manager.py`](tray_manager.py) · [`hotkey_manager.py`](hotkey_manager.py) · [`build_exe.py`](build_exe.py)
+* **모던 미니멀 UI & 빌드:** [`main_app.py`](main_app.py) · [`floating_widget.py`](floating_widget.py) · [`ui_theme.py`](ui_theme.py) · [`tray_manager.py`](tray_manager.py) · [`hotkey_manager.py`](hotkey_manager.py) · [`app_icon.py`](app_icon.py) · [`build_exe.py`](build_exe.py)
 * **4개 국어 지원 (`ko/en/ja/zh`):** [`i18n.py`](i18n.py) · [`i18n_habits.py`](i18n_habits.py) · [`i18n_personas.py`](i18n_personas.py)
 * **모바일 봇 & 웹훅 브릿지:** [`telegram_bot.py`](telegram_bot.py) · [`discord_bot.py`](discord_bot.py) · [`bot_commands.py`](bot_commands.py) · [`bot_bridge.py`](bot_bridge.py)
-* **문서 & 검증 스위트:** [`DEVELOPMENT_HISTORY.ko.md`](DEVELOPMENT_HISTORY.ko.md) · [`REFERENCES.ko.md`](REFERENCES.ko.md) · [`HARNESS_SPEC.ko.md`](HARNESS_SPEC.ko.md) · [`BOT_INTEGRATION_GUIDE.ko.md`](BOT_INTEGRATION_GUIDE.ko.md) · [`test_regression_suite.py`](test_regression_suite.py) · [`test_e2e_scenarios.py`](test_e2e_scenarios.py)
+* **문서 · 스톡 고지 · 검증:** [`DEVELOPMENT_HISTORY.ko.md`](DEVELOPMENT_HISTORY.ko.md) · [`REFERENCES.ko.md`](REFERENCES.ko.md) · [`HARNESS_SPEC.ko.md`](HARNESS_SPEC.ko.md) · [`BOT_INTEGRATION_GUIDE.ko.md`](BOT_INTEGRATION_GUIDE.ko.md) · [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) · [`test_regression_suite.py`](test_regression_suite.py) · [`test_e2e_scenarios.py`](test_e2e_scenarios.py)
 
 ---
 
@@ -73,7 +73,7 @@ pip install -r requirements.txt
 python main_app.py
 ```
 
-### 방법 C: 모바일 봇 & 웹훅 연동 (`⚙️ 설정 → 🌐 모바일 봇/API 연동...`)
+### 방법 C: 모바일 봇 & 웹훅 연동 (`⚙️ 설정 → 🌐 모바일 봇/웹훅...`)
 * **Telegram 봇** · **Discord 내장 봇** · **Android `HTTP Request Shortcuts` · 보조 iPhone 공기계(Wi-Fi `단축어`)** 지원
 * 상세 설정, `@BotFather` 사칭 봇 주의사항, Android `http://` / `Custom Text JSON` 팁, **플랫폼 업데이트에 따른 메뉴 변경 가능성 안내**는 [`BOT_INTEGRATION_GUIDE.ko.md`](BOT_INTEGRATION_GUIDE.ko.md) 를 참고하세요.
 * 개인 DB(`*.db`), 엑셀(`*.xlsx`), `.env`, 빌드 산출물은 `.gitignore` 및 `build_exe.py` 보안 검사(`verify_clean_exe_bundle`)로 Git 푸시 및 `.exe` 번들에서 자동 제외됩니다.
@@ -84,14 +84,15 @@ python main_app.py
 
 | 기여자 | 역할 | 주요 기여 영역 |
 | :--- | :--- | :--- |
-| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · 실기기 QA** | 35대 성공 습관 프레임워크 & 엑셀 중심 아키텍처 기획, Harness² 방향 제시, 실사용 바탕화면·모바일 실기기 피드백(동적 날짜 라벨, 시간대별 넛지 필터, 실시간 투명도 슬라이더, 봇 UI 정렬), 개방형 API 범위 및 프라이버시 기준 결정 |
-| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · 구현 · 검증 엔지니어** | Python 코어 · SQLite WAL 3-Way Sync · 4대 페르소나 엔진, 플로팅 위젯 & 트레이, 4개 국어 i18n, Telegram/Discord/웹훅 브릿지, `.exe` 빌드 프라이버시 가드, 25개 회귀·7단계 E2E 테스트, 샌드박스 데모 영상 및 다국어 문서 작성 |
+| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · UX/UI Director · 실기기 QA** | 35대 성공 습관 프레임워크 & 엑셀 중심 아키텍처 기획, Harness² · 무비용 로컬 NLP 방향 확정, **모던 미니멀("Anti-Slop") UI 개편** · 성장 그래프 아이콘 통일 · 상업적 무료 스톡 및 UI 디자인 문헌 고지 기준 수립, 실사용 바탕화면·모바일 실기기 QA, 개방형 API 범위 · MIT 라이선스 확정 |
+| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · Full-Stack, UI & QA Engineer** | [`ui_theme.py`](ui_theme.py)(60-30-10 옵시디언 토큰 + SVG 래스터라이저) & Lucide 29종 스톡 통합, 플로팅 위젯 전면 UI 리뉴얼, Python 코어 · SQLite WAL 3-Way Sync, 4개 국어 i18n, Telegram/Discord/웹훅 브릿지, `.exe` 빌드 프라이버시 가드, 자동 회귀/E2E 검증, 샌드박스 데모 영상 및 다국어 문서 · 서드파티 고지 작성 |
 
 * [🛠️ 단계별 개발 히스토리 및 역할 분담 상세 (`DEVELOPMENT_HISTORY.ko.md`)](DEVELOPMENT_HISTORY.ko.md)
-* [📚 35대 습관 출처·논문·서적 레퍼런스 (`REFERENCES.ko.md`)](REFERENCES.ko.md) · [📐 Harness² 설계 규격 (`HARNESS_SPEC.ko.md`)](HARNESS_SPEC.ko.md)
+* [📚 35대 습관 & UI/HCI 디자인 참고문헌 (`REFERENCES.ko.md`)](REFERENCES.ko.md) · [📐 Harness² 설계 규격 (`HARNESS_SPEC.ko.md`)](HARNESS_SPEC.ko.md)
+* [📜 상업적 무료 스톡 아이콘 저작권 고지 (`THIRD-PARTY-NOTICES.md`)](THIRD-PARTY-NOTICES.md) — **Lucide Icons** (`ISC License` / Feather `MIT License`) 29종 수록
 
 ---
 
-## 📄 라이선스 (License)
+## 📄 라이선스 & 무료 스톡 크레딧 (License & Credits)
 
-본 프로젝트는 [MIT License](LICENSE)로 배포됩니다.
+본 프로젝트는 [MIT License](LICENSE)로 배포됩니다. UI 및 앱 아이콘에는 상업적 이용이 자유로운 **Lucide Icons** ([lucide.dev](https://lucide.dev), `ISC License` / Feather `MIT License`)를 사용했으며 상세 고지는 [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) 에서 확인하실 수 있습니다.

@@ -18,7 +18,7 @@ Google Research **Harness²** 主张将包裹核心模型的 **执行框架（Ex
 │                           HARNESS² SYSTEM MODEL                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   [Fixed Core] ─── 35项成功习惯库 ＆ 多语言自然语言 / LLM 分析核心          │
+│   [Fixed Core] ─── 35项成功习惯库 ＆ 100% 离线多语言本地 NLP 引擎          │
 │         ▲                                                                   │
 │         │ (Contract / Data Invariant)                                       │
 │         ▼                                                                   │

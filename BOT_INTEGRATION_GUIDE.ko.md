@@ -14,7 +14,7 @@
   ├─► 1) Telegram 봇 (/start, /status, /nudge, /review, /어제, 자연어) [외출 시 LTE/5G 메인 추천]
   ├─► 2) Discord 내장 봇 (DM 자동 응답 · 전용 Channel ID · @멘션 / !status / !nudge)
   ├─► 3) Android HTTP Request Shortcuts / MacroDroid · Wi-Fi iPhone 단축어 · 로컬 웹훅 (/checkin)
-  └─► 4) CLI / Grok·OpenAI·Gemini 공식 LLM API 모드
+  └─► 4) CLI 모드 & 100% 오프라인 다국어 로컬 NLP 엔진 (외부 API 토큰 불필요)
          │
          ▼
 [Life OS 통합 코어 (AssistantEngine + DatabaseManager + i18n)]
@@ -30,7 +30,7 @@
 
 별도 터미널이나 외부 서버(포트포워딩·터널링)를 열지 않아도 플로팅 비서 앱(`LifeOS_Assistant_v2.exe`) 안에서 바로 켜고 끌 수 있습니다:
 
-1. 플로팅 위젯 우클릭(또는 `⚙️` 아이콘 → **`🌐 모바일 봇/API 연동...`**) → **`🌐 모바일 봇 · Discord & LLM API 연동 설정`**
+1. 플로팅 위젯 우클릭(또는 `⚙️` 아이콘 → **`🌐 모바일 봇/웹훅...`**) → **`🌐 모바일 봇 · Telegram · Discord · 웹훅 연동 설정`**
 2. 원하는 항목을 켜고 **`[저장 및 즉시 연결 적용]`** 클릭!
    - **텔레그램 AI 비서 봇:** `@BotFather` 토큰만으로 외부망(LTE/5G) 포함 백그라운드 상시 수신
    - **디스코드(Discord) AI 비서 봇:** Discord Developer Portal 봇 토큰만으로 외부 터널 없이 Gateway v10(WSS) 실시간 수신
@@ -86,7 +86,7 @@
 4. 설정 창을 닫고(`ESC`), 방금 만든 **`#습관-체크인`** 채널을 **마우스 우클릭 → 맨 아래 `채널 ID 복사`**
 
 #### 4) Life OS 앱에 토큰/채널 등록 및 연결 확인
-1. PC 바탕화면 **`LifeOS_Assistant_v2.exe`** 실행 → 플로팅 위젯 **우클릭 → `🌐 모바일 봇/API 연동...`**
+1. PC 바탕화면 **`LifeOS_Assistant_v2.exe`** 실행 → 플로팅 위젯 **우클릭 → `🌐 모바일 봇 / 웹훅 연동 설정`**
 2. 스크롤을 내려 **Discord 카드**에서 아래 값을 입력합니다:
    * **`Bot Token:`** 1단계에서 복사한 토큰 붙여넣기 → 오른쪽 **`[연결 확인]`** 클릭 → `디스코드 연결 성공! (@봇이름)` 확인
    * **`전용 Channel ID (선택):`**
@@ -139,6 +139,5 @@ iPhone 단축어 대신 **안드로이드 메인폰**이나 **집 Wi-Fi에 연�
 
 ---
 
-### 🔹 방법 D: Grok / OpenAI / Gemini 공식 LLM API 연동
-1. 앱 내 **`🌐 모바일 봇 / API 연동...`** 또는 `.env`에서 제공자(`grok`, `openai`, `gemini`)와 API 키를 지정합니다.
-2. 정해진 키워드 외의 자유로운 문장 맥락도 LLM이 35대 습관 ID로 매핑하여 코칭해 줍니다. (미설정 또는 오프라인 시 무료 로컬 키워드 엔진이 자동 동작합니다.)
+### 🔹 100% 오프라인 다국어 로컬 NLP 엔진 (API 토큰 비용 0원)
+모든 자연어 습관 매칭(`ai_secretary.py` / `LocalHabitNLP`)과 페르소나 코칭은 외부 유료 LLM API 키나 토큰 소모 없이 **내 PC에서 100% 무료·오프라인**으로 즉시 동작합니다. 위젯의 **`[?]`** 버튼을 누르면 4개 국어 인식 키워드를 바로 검색해 입력할 수 있습니다.

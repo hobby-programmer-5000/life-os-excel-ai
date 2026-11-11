@@ -109,3 +109,19 @@
 |:---|:---|:---|
 | **智能体护栏架构** | **Google Research Harness²** ([github.com/google-research/harness2](https://github.com/google-research/harness2)) | 分离稳定内核（35习惯与NLP引擎）与外围执行框架（SQLite时间轴、Excel双向同步、Tkinter悬浮窗、系统托盘/快捷键、移动端Bot），落实 `Propose → Probe → Compose` 闭环 ([HARNESS_SPEC.zh.md](HARNESS_SPEC.zh.md))。 |
 | **本地高并发持久化** | SQLite WAL + `openpyxl` Dual Sync | 确保桌面浮窗、Telegram、Discord 与局域网 Webhook 并发访问不锁死，并完好保留 Excel 公式图表。 |
+
+---
+
+## 🎨 现代极简 UI 与人机交互 (HCI) 参考文献
+
+为了消除桌面常驻工具常见的高饱和霓虹边框、按钮表情堆砌与“AI 廉价模板感（AI slop）”，[`ui_theme.py`](ui_theme.py)、[`app_icon.py`](app_icon.py) 与 [`floating_widget.py`](floating_widget.py) 基于以下 HCI 与经典设计文献进行系统化重构：
+
+| 设计原则 / 理论 | 作者与出处（Primary Sources） | 本项目 UI 实践方式 |
+|:---|:---|:---|
+| **“少，但更好” (*Less, but better*)** | Dieter Rams, *Ten Principles for Good Design* (Braun / Vitsœ — 好的设计不喧宾夺主、尽可能克制) | 剥离多余霓虹渐变与视觉噪音，在沉稳哑光表面上仅保留日常打卡必需元素。 |
+| **数据墨水比与去图表垃圾** | Edward R. Tufte, *The Visual Display of Quantitative Information* (1983 / 2001) | 移除蓝/紫/金多色边框与按钮位图 Emoji，改用统一 `1px` `#27272A` 细线轮廓与几何图标。 |
+| **平静技术 (Calm Technology)** | Mark Weiser & John Seely Brown, *Designing Calm Technology* (Xerox PARC, 1995) | 采用黑曜石（`#09090B`）/ 锌灰（`#111216`）低干扰表面与实时透明度滑块，使悬浮窗长期停留屏幕边缘而不抢占注意力。 |
+| **认知负荷理论（降低外在负荷）** | John Sweller, *"Cognitive Load During Problem Solving: Effects on Learning"*, *Cognitive Science* (1988) | 统一卡片层级与暗色表单输入框以减少视觉搜索成本，仅将低饱和翡翠绿（`#10B981`）保留给“已完成/在线”语义。 |
+| **网格系统与字体排版层级** | Josef Müller-Brockmann, *Grid Systems in Graphic Design / Raster Systeme* (1968 / 1981) | 通过严格的垂直节奏、对齐间距与高可读性单色对比来组织页眉、日期栏、提醒卡、清单与底栏。 |
+| **极简主义 · 希克定律 · 单一主操作聚焦** | Nielsen Norman Group (Jakob Nielsen & Don Norman) · 60-30-10 深色中性 Token 体系 | 每个区域仅突出单一主 CTA（纯白 `#F4F4F5` `发送`/`保存`、翡翠绿 `#059669` `完成`），其余辅助按钮降噪为幽灵线框。 |
+| **可商用免费开源矢量图标库** | [Lucide Icons](https://lucide.dev) (`ISC License`) + Feather (`MIT License`) — [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) | 打包 29 枚开源 SVG 矢量图标并由纯 Python 光栅引擎平滑绘制，彻底取代跨平台不统一的位图表情符号。 |

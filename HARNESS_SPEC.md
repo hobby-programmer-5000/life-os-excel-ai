@@ -18,7 +18,7 @@ This project maps that separation directly into local desktop software engineeri
 │                           HARNESS² SYSTEM MODEL                             │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   [Fixed Core] ─── 35 Master Habits DB & Multilingual NLP / LLM Engine      │
+│   [Fixed Core] ─── 35 Master Habits DB & Offline Multilingual NLP Engine   │
 │         ▲                                                                   │
 │         │ (Contract / Data Invariant)                                       │
 │         ▼                                                                   │
@@ -72,7 +72,7 @@ This project maps that separation directly into local desktop software engineeri
   2. ⚡ **Andrew Huberman** (Circadian light, dopamine & neurobiology protocols)
   3. 🚀 **Elon Musk & Grok** (First-principles thinking & witty directness)
   4. 🧠 **Marcus Aurelius** (Stoic dichotomy of control & equanimity)
-- **Mobile Bot & Webhook Bridges + Dual NLP/LLM:** Supports local keyword engine + optional Grok / OpenAI / Gemini APIs, plus Telegram, Discord Gateway v10, and LAN HTTP Webhook (`/checkin`, `/stats`, `/habits`, `/nudge`, `/review`).
+- **Mobile Bot & Webhook Bridges + 100% Offline Local NLP:** Zero-token local 4-language keyword/pattern engine plus Telegram, Discord Gateway v10, and LAN HTTP Webhook (`/checkin`, `/stats`, `/habits`, `/nudge`, `/review`).
 - **Standalone Packaging (`build_exe.py`):** Compiles into single-file `LifeOS_Assistant_v2.exe` with post-build privacy audit (`verify_clean_exe_bundle`).
 
 ---

@@ -52,18 +52,19 @@ python ai_secretary.py --checkin "早上晒太阳15分钟，完成90分钟深度
 
 * [🤖 Telegram / Discord / 手机快捷指令联动指南 (`BOT_INTEGRATION_GUIDE.zh.md`)](BOT_INTEGRATION_GUIDE.zh.md) *(含外部平台更新导致设置界面变化的提示说明)*
 * [🛠️ 项目演进、开发历程与分工 (`DEVELOPMENT_HISTORY.zh.md`)](DEVELOPMENT_HISTORY.zh.md)
-* [📚 科学文献与书籍参考 (`REFERENCES.zh.md`)](REFERENCES.zh.md) · [📐 Harness² 架构规范 (`HARNESS_SPEC.zh.md`)](HARNESS_SPEC.zh.md)
+* [📚 科学与 UI/HCI 设计参考文献 (`REFERENCES.zh.md`)](REFERENCES.zh.md) · [📐 Harness² 架构规范 (`HARNESS_SPEC.zh.md`)](HARNESS_SPEC.zh.md)
+* [📜 第三方可商用免费图标素材声明 (`THIRD-PARTY-NOTICES.md`)](THIRD-PARTY-NOTICES.md) — 收录 **Lucide Icons**（`ISC License` / Feather `MIT License`）全部 29 枚开源矢量素材与授权全文
 * 个人数据文件（`*.db`, `*.xlsx`, `.env`, `*.spec`, `build/`, `dist/`）均已在 `.gitignore` 中严格屏蔽，且 `build_exe.py` 内置自动打包内容审计 (`verify_clean_exe_bundle`)。
 
 ---
 
 ## 👥 共同贡献者 (Contributors)
 
-* **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** — *Product Owner · 领域架构 · 真机测试*: 策划7大领域×35习惯体系与Excel本地数据主权理念，提出 Harness² 与桌面助手交互方向，主导真机/桌面使用体验评审（动态日期按钮、分时段智能提醒、实时横滑透明度条、Bot配置卡片排序）及开放接口/隐私边界决策。
-* **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** — *AI 结对编程工程师 · 全栈与自动化测试*: 实现全部Python核心引擎、SQLite WAL三向同步、Tkinter悬浮窗与托盘、4语言i18n、Telegram/Discord/局域网Webhook桥接、PyInstaller隐私打包校验、25项回归+7步E2E测试集、沙盒演示视频及多语言文档。
+* **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** — *Product Owner · 领域架构 · UX/UI 总监 · 真机测试*: 策划7大领域×35习惯体系与Excel本地数据主权理念，决定移除付费外部 LLM API 坚持零门槛本地 NLP，主导**现代极简（Anti-Slop）UI 改造**、统一增长曲线应用图标选型及免费开源图标/文献引用规范，主抓桌面与真机体验（动态日期按钮、分时段智能提醒、实时横滑透明度条、Bot卡片排序）及零隐私/零令牌安全边界。
+* **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** — *AI 结对编程工程师 · 全栈、UI 与自动化测试*: 构建 [`ui_theme.py`](ui_theme.py)（60-30-10 深色令牌 + 纯 Python SVG 光栅器）与 29 枚 Lucide 图标集成，重塑悬浮窗极简 UI、Python核心引擎、SQLite WAL三向同步、4语言i18n、Telegram/Discord/局域网Webhook桥接、PyInstaller隐私审计、自动化回归/E2E套件、沙盒演示视频及 [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md) 与多语言设计文献。
 
 ---
 
-## 📄 开源许可证 (License)
+## 📄 开源许可证与素材致谢 (License & Credits)
 
-本项目遵循 [MIT License](LICENSE) 开源发布。
+本项目遵循 [MIT License](LICENSE) 开源发布。桌面界面与图标基于 **Lucide Icons** ([lucide.dev](https://lucide.dev), `ISC License` 含 Feather `MIT License`) 构建，完整授权见 [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md)。
