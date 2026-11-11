@@ -61,3 +61,9 @@ python ai_secretary.py --checkin "早上晒太阳15分钟，完成90分钟深度
 
 * **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** — *Product Owner · 领域架构 · 真机测试*: 策划7大领域×35习惯体系与Excel本地数据主权理念，提出 Harness² 与桌面助手交互方向，主导真机/桌面使用体验评审（动态日期按钮、分时段智能提醒、实时横滑透明度条、Bot配置卡片排序）及开放接口/隐私边界决策。
 * **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** — *AI 结对编程工程师 · 全栈与自动化测试*: 实现全部Python核心引擎、SQLite WAL三向同步、Tkinter悬浮窗与托盘、4语言i18n、Telegram/Discord/局域网Webhook桥接、PyInstaller隐私打包校验、25项回归+7步E2E测试集、沙盒演示视频及多语言文档。
+
+---
+
+## 📄 开源许可证 (License)
+
+本项目遵循 [MIT License](LICENSE) 开源发布。

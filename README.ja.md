@@ -61,3 +61,9 @@ python ai_secretary.py --checkin "朝15分日光を浴びて90分ディープワ
 
 * **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** — *Product Owner · Domain Architect · Real-Device QA*: 35習慣フレームワーク構想、Harness²/Excel中心アーキテクチャ設計、実機利用に基づくUX改善要求（動的日付ボタン・時間帯別ナッジ・リアルタイム透明度スライダー・Bot UI整理）、プライバシー基準・オープンAPI方針決定。
 * **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** — *AI Pair Programmer · Full-Stack & QA Engineer*: Pythonコア・SQLite WAL 3-Way同期・TkinterフローティングUI・4言語i18n・Telegram/Discord/LAN Webhook実装・PyInstallerプライバシー検証・25件回帰/7段階E2Eテスト・サンドボックスデモ動画・多言語ドキュメント作成。
+
+---
+
+## 📄 ライセンス (License)
+
+本プロジェクトは [MIT License](LICENSE) のもとで公開されています。

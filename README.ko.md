@@ -89,3 +89,9 @@ python main_app.py
 
 * [🛠️ 단계별 개발 히스토리 및 역할 분담 상세 (`DEVELOPMENT_HISTORY.ko.md`)](DEVELOPMENT_HISTORY.ko.md)
 * [📚 35대 습관 출처·논문·서적 레퍼런스 (`REFERENCES.ko.md`)](REFERENCES.ko.md) · [📐 Harness² 설계 규격 (`HARNESS_SPEC.ko.md`)](HARNESS_SPEC.ko.md)
+
+---
+
+## 📄 라이선스 (License)
+
+본 프로젝트는 [MIT License](LICENSE)로 배포됩니다.

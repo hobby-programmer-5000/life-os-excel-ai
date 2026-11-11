@@ -118,3 +118,9 @@ python ai_secretary.py --review
 | **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · Full-Stack & QA Engineer** | Core Python modules, SQLite WAL & 3-Way Sync, Tkinter floating UI & system tray, 4-language i18n, Telegram/Discord/LAN webhook implementation, PyInstaller bundle privacy verification, 25-case regression & 7-step E2E suites, sandbox demos & multilingual docs |
 
 > Full phase-by-phase breakdown: [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md)
+
+---
+
+## 📄 License
+
+Released under the [MIT License](LICENSE).
