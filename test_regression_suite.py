@@ -906,6 +906,13 @@ class TestMultilingualAndLocaleSandbox(unittest.TestCase):
                                     if val.startswith("="):
                                         formula_cnt += 1
                     self.assertGreaterEqual(formula_cnt, 90)
+                    # Brand-new starter workbooks must have ZERO pre-checked cells or phantom sample logs
+                    ws_tr = wb[SHEET_TITLES[lang]["tracker"]]
+                    for r in range(5, 40):
+                        for c in range(4, 11):
+                            self.assertIn(ws_tr.cell(r, c).value, (None, ""), f"[{lang}] Unexpected pre-check at R{r}C{c}")
+                    ws_lg = wb[SHEET_TITLES[lang]["log"]]
+                    self.assertLessEqual(ws_lg.max_row, 4)
                 finally:
                     wb.close()
 
@@ -922,6 +929,8 @@ class TestMultilingualAndLocaleSandbox(unittest.TestCase):
             ok, msg = db.sync_to_excel()
             self.assertTrue(ok, msg)
             self.assertIn("Bidirectional Excel sync complete", msg)
+            self.assertEqual(db.get_checks_for_date((today - datetime.timedelta(days=1)).isoformat()), {})
+            self.assertEqual(db.get_checks_for_date((today - datetime.timedelta(days=2)).isoformat()), {})
 
             time.sleep(0.12)
             wb = openpyxl.load_workbook(ja_xlsx)

@@ -32,19 +32,12 @@ EXCEL_UI = {
         "top5_headers": ["분야", "대표 인물", "습관 프로토콜", "오늘 실천 여부", "자가 피드백 / 메모"],
         "status_done": "✅ 완료",
         "status_todo": "⏳ 미완료",
-        "top5_notes": [
-            "오전 중 가장 중요한 보고서 초안 완성",
-            "햇빛 산책 15분 완료, 정신 각성 확실함",
-            "타인의 반응 대신 내 준비에만 집중",
-            "오전 9시~11시 스마트폰 비행기모드",
-            "불필요한 배달음식 방어 성공",
-        ],
+        "top5_notes": ["", "", "", "", ""],
         "sec_ai": "🤖 AI 비서 데일리 피드백 & 코칭 브리핑 (AI Secretary)",
         "ai_welcome": (
-            "💡 [AI 비서 모닝 브리핑 / 코칭 로그]\n\n"
-            "\"안녕하세요! 오늘의 라이프 비서입니다. 어제 수면과 딥워크 달성률이 85%를 기록하며 높은 생산성을 보였습니다.\n"
-            "오늘 앤드루 후버만 박사의 아침 햇빛 15분 노출과 워런 버핏의 5/25 최우선 1대 과제에 먼저 에너지를 투입해 보세요.\n"
-            "하루가 끝난 뒤, AI 비서에게 '오늘 후버만 루틴 완료했고 독서 30분 했어'라고 한마디 남겨주시면 엑셀에 자동 반영 및 피드백을 전달해 드립니다.\""
+            "💡 [AI 비서 시작 가이드]\n\n"
+            "\"환영합니다! 아침 15분 햇빛 노출과 워런 버핏의 5/25 최우선 과제부터 하루를 시작해 보세요.\n"
+            "데스크톱 위젯, CLI, Telegram, Discord, 로컬 웹훅 어디서든 자연어로 오늘 실천한 일과를 남기면 SQLite와 엑셀이 실시간 동기화됩니다.\""
         ),
         "sec_domains": "📊 7대 라이프 영역별 주간 누적 달성률",
         "dom_headers": ["영역 코드", "라이프 영역", "핵심 구루(Guru)", "습관 수", "주간 달성률", "달성 상태 평가"],
@@ -63,21 +56,14 @@ EXCEL_UI = {
         "track_week_tot": "주간 종합",
         "rev_banner": "📈 주간 회고 프레임워크 (KPT + 레이 달리오 원칙 회고)",
         "rev_sections": [
-            ("B4:H4", "🎯 이번 주 핵심 성취 및 Keep (지속해야 할 긍정적 습관)",
-             "1. 앤드루 후버만 루틴(아침 햇빛 15분 및 찬물 샤워) 5일 연속 달성으로 아침 피로도 대폭 감소\n2. 딥워크 90분 블록을 지키며 핵심 제안서 기획을 주 3회 집중 작성 완료함"),
-            ("B8:H8", "⚠️ 문제점 및 개선 과제 Problem (장애물 및 실패 분석)",
-             "1. 밤 11시 이후 스마트폰 유튜브 시청으로 인해 2일간 취침 디톡스 실패\n2. 워런 버핏의 5/25 법칙을 잊고 오후에 긴급하지 않은 잔무에 시간을 빼앗김"),
-            ("B12:H12", "🚀 다음 주 실행 실험 Try (새롭게 도입할 마이크로 액션)",
-             "1. 침실에 스마트폰 충전기를 치우고 거실에 두고 자는 환경 마찰력 세팅 (아토믹 시스템)\n2. 출근 직후 첫 90분은 이메일이나 메신저를 켜지 않고 딥워크 전용 타이머 작동"),
-            ("B16:H16", "🤖 AI 비서의 주간 종합 평가 & 피드백 (AI Weekly Report)",
-             "💡 [AI 코칭 분석]\n\"이번 주 전체 습관 달성률은 68.2%로 양호한 흐름입니다. 다음 주 가장 큰 레버리지는 '저녁 디지털 디톡스'입니다.\""),
+            ("B4:H4", "🎯 이번 주 핵심 성취 및 Keep (지속해야 할 긍정적 습관)", ""),
+            ("B8:H8", "⚠️ 문제점 및 개선 과제 Problem (장애물 및 실패 분석)", ""),
+            ("B12:H12", "🚀 다음 주 실행 실험 Try (새롭게 도입할 마이크로 액션)", ""),
+            ("B16:H16", "🤖 AI 비서의 주간 종합 평가 & 피드백 (AI Weekly Report)", ""),
         ],
         "log_banner": "🤖 AI 비서 연동 및 대화형 체크인 기록 로그 (Telegram / Webhook / Widget)",
         "log_headers": ["일시 (Timestamp)", "입력 채널", "사용자 입력 메시지 (Check-in)", "AI 분석 및 체크된 습관", "AI 코칭 & 응원 메시지", "처리 상태"],
-        "log_samples": [
-            ("2026-10-28 08:30", "Telegram Bot", "오늘 아침 15분 햇빛 산책하고 찬물 샤워 완료했어. 버핏 우선순위도 뽑아둠!", "3개 습관: 버핏 5/25, 아침 햇빛, 찬물 샤워", "최적의 도파민과 각성 상태로 하루를 시작하셨습니다!", "✅ 자동 반영 완료"),
-            ("2026-10-28 22:45", "Discord Webhook", "저녁 감사일기 썼고 책 30분 읽었어. 이제 폰 끄고 잘게.", "3개 습관: 디지털 디톡스, 감사일기, 독서 1시간", "수면 전 디지털 디톡스로 깊은 REM 수면을 확보하셨습니다.", "✅ 자동 반영 완료"),
-        ],
+        "log_samples": [],
     },
     "en": {
         "dash_title": "🌟 ALL-IN-ONE LIFE OS : Master Habits & Execution Dashboard",
@@ -92,18 +78,12 @@ EXCEL_UI = {
         "top5_headers": ["Domain", "Role Model", "Habit Protocol", "Today Status", "Self Feedback / Note"],
         "status_done": "✅ Done",
         "status_todo": "⏳ Todo",
-        "top5_notes": [
-            "Drafted the #1 priority report before noon",
-            "15m morning daylight & cold exposure complete",
-            "Focused only on what sits inside my control",
-            "Airplane mode deep work block 9:00-10:30 AM",
-            "Avoided unplanned impulse spending today",
-        ],
+        "top5_notes": ["", "", "", "", ""],
         "sec_ai": "🤖 AI Coach Daily Briefing & Sync Feed",
         "ai_welcome": (
             "💡 [AI Coach Morning Briefing]\n\n"
             "\"Welcome to Life OS! Anchor your morning energy with Andrew Huberman's 15m sunlight and Warren Buffett's #1 priority.\n"
-            "Send natural check-ins from your Desktop Widget, CLI, Webhook, or Telegram Bot anytime to keep SQLite and Excel in sync.\""
+            "Send natural check-ins from your Desktop Widget, CLI, Webhook, Telegram, or Discord anytime to keep SQLite and Excel in sync.\""
         ),
         "sec_domains": "📊 Weekly Completion by 7 Life Domains",
         "dom_headers": ["Code", "Life Domain", "Core Mentors", "Habits", "Weekly Rate", "Tier"],
@@ -122,21 +102,14 @@ EXCEL_UI = {
         "track_week_tot": "Weekly Avg",
         "rev_banner": "📈 Weekly Executive Review Framework (KPT + Dalio Principles)",
         "rev_sections": [
-            ("B4:H4", "🎯 Keep — Key Wins & Repeatable Habits",
-             "1. Morning sunlight & cold exposure streak boosted morning clarity across 5 days\n2. Completed 3 uninterrupted 90-minute deep work blocks on key deliverables"),
-            ("B8:H8", "⚠️ Problem — Friction Points & Root Causes",
-             "1. Late-night phone scrolling broke pre-bed digital detox twice this week\n2. Reactive afternoon messages diluted top 5/25 focus priorities"),
-            ("B12:H12", "🚀 Try — Next Week Micro-Experiments",
-             "1. Charge phone outside the bedroom overnight to add friction against doomscrolling\n2. Keep chat apps closed during the first 90 minutes each morning"),
-            ("B16:H16", "🤖 AI Coach Weekly Summary & Leverage Insight",
-             "💡 [AI Coaching Review]\n\"Solid consistency on physical protocols! Guarding your evening screen-off cutoff will compound sleep quality and deep work output next week.\""),
+            ("B4:H4", "🎯 Keep — Key Wins & Repeatable Habits", ""),
+            ("B8:H8", "⚠️ Problem — Friction Points & Root Causes", ""),
+            ("B12:H12", "🚀 Try — Next Week Micro-Experiments", ""),
+            ("B16:H16", "🤖 AI Coach Weekly Summary & Leverage Insight", ""),
         ],
         "log_banner": "🤖 AI Assistant Real-Time Check-in Integration Log",
         "log_headers": ["Timestamp", "Channel", "Check-in Message", "Matched Habits", "AI Coaching Feedback", "Sync Status"],
-        "log_samples": [
-            ("2026-10-28 08:30", "Telegram Bot", "Morning 15m sunlight and cold shower done, set Buffett priorities!", "3 habits: 5/25 Priority, Sunlight, Cold Shower", "Strong dopamine and circadian calibration to start the day!", "✅ Synced"),
-            ("2026-10-28 22:45", "Webhook / Widget", "Read 1 hour and wrote my 5 gratitude notes before screens off.", "3 habits: Digital Detox, Gratitude, Reading", "Protecting pre-sleep rest prepares deep focus tomorrow.", "✅ Synced"),
-        ],
+        "log_samples": [],
     },
     "ja": {
         "dash_title": "🌟 ALL-IN-ONE LIFE OS : 成功習慣＆実行ダッシュボード",
@@ -151,13 +124,7 @@ EXCEL_UI = {
         "top5_headers": ["領域", "ロールモデル", "習慣プロトコル", "本日達成", "セルフメモ"],
         "status_done": "✅ 完了",
         "status_todo": "⏳ 未完了",
-        "top5_notes": [
-            "午前中に最優先レポート草案を完了",
-            "朝日15分＆冷水シャワーで覚醒リズム確立",
-            "制御できる課題のみにエネルギーを集中",
-            "9:00-10:30 機内モードでディープワーク",
-            "衝動買いゼロのルールを遵守",
-        ],
+        "top5_notes": ["", "", "", "", ""],
         "sec_ai": "🤖 AIコーチ 日次フィードバック＆同期ログ",
         "ai_welcome": (
             "💡 [AIコーチ・モーニングブリーフィング]\n\n"
@@ -181,21 +148,14 @@ EXCEL_UI = {
         "track_week_tot": "週間平均",
         "rev_banner": "📈 週次レビュー フレームワーク (KPT + ダリオ原則)",
         "rev_sections": [
-            ("B4:H4", "🎯 Keep — 今週の成果と継続したい良い習慣",
-             "1. 朝の自然光15分＋冷水シャワーを5日連続で維持\n2. 90分ディープワークを週3回確保し重要企画を推進"),
-            ("B8:H8", "⚠️ Problem — 課題と摩擦要因の分析",
-             "1. 深夜のスマホ視聴により就寝前デジタルデトックスを2日逸脱\n2. 午後の割り込み対応で優先度が下がる場面があった"),
-            ("B12:H12", "🚀 Try — 来週のマイクロ改善アクション",
-             "1. 寝室に充電器を置かずリビングで充電する環境設計を徹底\n2. 始業後最初の90分はチャットツールを閉じて集中する"),
-            ("B16:H16", "🤖 AIコーチ 週次総合フィードバック",
-             "💡 [AIコーチ分析]\n「基礎体調プロトコルが高い水準で安定しています。夜の画面オフ時間を守ることで翌日の集中力がさらに複利で伸びます。」"),
+            ("B4:H4", "🎯 Keep — 今週の成果と継続したい良い習慣", ""),
+            ("B8:H8", "⚠️ Problem — 課題と摩擦要因の分析", ""),
+            ("B12:H12", "🚀 Try — 来週のマイクロ改善アクション", ""),
+            ("B16:H16", "🤖 AIコーチ 週次総合フィードバック", ""),
         ],
         "log_banner": "🤖 AIアシスタント連携＆チェックイン記録ログ",
         "log_headers": ["日時 (Timestamp)", "入力チャネル", "チェックイン内容", "一致した習慣", "AIコーチングメッセージ", "処理状態"],
-        "log_samples": [
-            ("2026-10-28 08:30", "Telegram Bot", "朝15分日光を浴びて冷水シャワー完了。バフェット優先順位も整理！", "3件: 5/25ルール, 朝日15分, 冷水シャワー", "理想的な生体リズムと集中状態でスタートできました！", "✅ 自動反映完了"),
-            ("2026-10-28 22:45", "Desktop Widget", "寝る前に感謝日記と1時間読書を完了。スマホをオフにします。", "3件: デジタル断ち, 感謝日記, 読書1時間", "睡眠前の良質な休息が明日のパフォーマンスを守ります。", "✅ 自動反映完了"),
-        ],
+        "log_samples": [],
     },
     "zh": {
         "dash_title": "🌟 ALL-IN-ONE LIFE OS : 35项成功习惯与执行力仪表盘",
@@ -210,18 +170,12 @@ EXCEL_UI = {
         "top5_headers": ["领域", "代表导师", "习惯行动方案", "今日状态", "自我反馈 / 备注"],
         "status_done": "✅ 已完成",
         "status_todo": "⏳ 待完成",
-        "top5_notes": [
-            "上午已完成今日最重要的方案初稿",
-            "晨间日照15分钟+冷水澡状态拉满",
-            "只专注于自身可控之事，排除杂音",
-            "上午9:00-10:30开启飞行模式深度工作",
-            "成功守住不冲动消费底线",
-        ],
+        "top5_notes": ["", "", "", "", ""],
         "sec_ai": "🤖 AI 教练每日简报与联动反馈",
         "ai_welcome": (
             "💡 [AI 教练晨间简报]\n\n"
             "“您好！今天建议优先落实休伯曼的晨间日照15分钟与巴菲特5/25首要任务。\n"
-            "通过桌面悬浮窗、命令行或 Telegram 机器人随时打卡，数据会自动同步至 SQLite 与本表格。”"
+            "通过桌面悬浮窗、命令行或 Telegram / Discord 机器人随时打卡，数据会自动同步至 SQLite 与本表格。”"
         ),
         "sec_domains": "📊 七大生命领域每周累计达成率",
         "dom_headers": ["代码", "生命领域", "核心导师", "习惯数", "本周达成率", "状态评级"],
@@ -240,21 +194,14 @@ EXCEL_UI = {
         "track_week_tot": "周综合",
         "rev_banner": "📈 每周复盘框架 (KPT + 达利欧原则复盘)",
         "rev_sections": [
-            ("B4:H4", "🎯 Keep — 本周成果与值得坚持的好习惯",
-             "1. 连续5天完成晨间晒太阳与冷水澡，白天精力显著提升\n2. 每周保质保量完成3次90分钟无干扰深度工作"),
-            ("B8:H8", "⚠️ Problem — 阻碍与待改进问题",
-             "1. 睡前刷手机导致有两天未能落实睡前1小时数字排毒\n2. 下午零碎消息过多，挤压了核心任务时间"),
-            ("B12:H12", "🚀 Try — 下周微行动实验",
-             "1. 夜间手机留在客厅充电，用环境设计增加刷手机阻力\n2. 每天开工前90分钟关闭聊天软件专心推进首要目标"),
-            ("B16:H16", "🤖 AI 教练周度综合评估反馈",
-             "💡 [AI 周评洞察]\n“体能基础习惯执行非常稳健！下周只要守住睡前1小时远离屏幕，睡眠质量与深度专注将形成复利飞跃。”"),
+            ("B4:H4", "🎯 Keep — 本周成果与值得坚持的好习惯", ""),
+            ("B8:H8", "⚠️ Problem — 阻碍与待改进问题", ""),
+            ("B12:H12", "🚀 Try — 下周微行动实验", ""),
+            ("B16:H16", "🤖 AI 教练周度综合评估反馈", ""),
         ],
         "log_banner": "🤖 AI 助手多端联动打卡日志 (Telegram / Webhook / 悬浮窗)",
         "log_headers": ["时间 (Timestamp)", "输入渠道", "用户打卡内容", "识别匹配的习惯", "AI 教练鼓励反馈", "同步状态"],
-        "log_samples": [
-            ("2026-10-28 08:30", "Telegram Bot", "早上晒了15分钟太阳洗了冷水澡，列好了今天最重要的优先级！", "3项: 5/25优先级, 晨间日照, 冷水澡", "非常棒！用黄金昼夜节律和多巴胺基线开启高效一天！", "✅ 自动同步成功"),
-            ("2026-10-28 22:45", "Desktop Widget", "睡前写了5件感恩日记并看书1小时，准备关屏幕休息。", "3项: 数字排毒, 感恩日记, 阅读", "睡前远离蓝光将大幅提升夜间深度睡眠修复质量。", "✅ 自动同步成功"),
-        ],
+        "log_samples": [],
     },
 }
 
@@ -496,12 +443,7 @@ def build_life_os_workbook(output_path, lang=None):
 
         for day_c in range(4, 11):
             cell_day = ws_track.cell(row=r_num, column=day_c)
-            if day_c == 4 and idx in [1, 2, 6, 7, 8, 11, 15, 16, 26, 31, 33]:
-                cell_day.value = 1
-            elif day_c == 5 and idx in [1, 6, 7, 11, 16, 21, 31, 32]:
-                cell_day.value = 1
-            else:
-                cell_day.value = ""
+            cell_day.value = ""
             cell_day.font = bold_font
             cell_day.alignment = align_center
             cell_day.border = card_border
