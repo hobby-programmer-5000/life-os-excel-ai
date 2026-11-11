@@ -1,16 +1,16 @@
 """
 =============================================================================
-🌟 ALL-IN-ONE LIFE OS : AI 습관 비서 (AI Habit Secretary)
+🌟 ALL-IN-ONE LIFE OS : AI 습관 비서 (Local Multilingual NLP Habit Secretary)
 =============================================================================
-1. 자연어 일과 보고 분석 -> 35대 성공인 습관 자동 매핑 & 다국어 NLP/LLM 코칭
+1. 100% 오프라인 다국어 자연어 분석 -> 35대 성공인 습관 자동 매핑 & 코칭 (외부 유료 API 불필요)
 2. 거인들의 철학(버핏, 후버만, 아우렐리우스 등) 기반 맞춤 코칭 & SQLite/Excel 양방향 동기화
 3. 한국어(ko), 영어(en), 일본어(ja), 중국어(zh) 4개 국어 지원 (시스템 언어 자동 감지)
 =============================================================================
 """
 
 import os
+import re
 import sys
-import json
 import argparse
 import datetime
 from pathlib import Path
@@ -34,18 +34,39 @@ DEFAULT_EXCEL_PATH = BASE_DIR / "Life_OS_Successful_Habits.xlsx"
 # Exported catalog for backward compatibility (localized to active OS/env locale)
 HABITS_CATALOG = get_habits_catalog()
 
+_NORM_RE = re.compile(r"[\s\-_·.,!?;:'\"()~]+")
 
-class LLMClient:
-    """Supports Grok, OpenAI, Gemini, or Offline multilingual rule-based NLP."""
-    def __init__(self, provider=None, api_key=None, lang=None):
-        self.provider = (provider or os.getenv("LLM_PROVIDER", "mock")).lower()
-        self.api_key = api_key or os.getenv("GROK_API_KEY") or os.getenv("OPENAI_API_KEY") or os.getenv("GEMINI_API_KEY")
+# Extra flexible multi-word phrase patterns for common separated phrasings across ko/en/ja/zh
+_EXTRA_PHRASE_PATTERNS = {
+    6: (
+        re.compile(r"晒.{0,8}太阳"),
+        re.compile(r"아침.{0,8}(햇빛|햇볕)"),
+    ),
+    8: (
+        re.compile(r"(put|keep).{0,14}(phone|screen).{0,14}(away|off)", re.I),
+        re.compile(r"(before bed|bedtime).{0,16}(no phone|phone away|screens? off)", re.I),
+        re.compile(r"(자기\s*전|잠들기\s*전|취침\s*전).{0,12}(스마트폰|폰|화면|휴대폰).{0,10}(멀리|치우|끄|꺼|안\s*보)"),
+        re.compile(r"(스마트폰|휴대폰).{0,8}(멀리|치웠|치움)"),
+        re.compile(r"(寝る前|就寝前).{0,10}(スマホ|画面).{0,10}(見な|オフ|離)"),
+    ),
+}
+
+
+class LocalHabitNLP:
+    """Offline multilingual rule-based NLP matcher & coaching synthesizer (zero API cost)."""
+
+    def __init__(self, lang=None):
         self.lang = lang
+
+    @staticmethod
+    def _normalize_text(text: str) -> str:
+        """Normalize case, whitespace, hyphens, and punctuation so '2-minute' matches '2 minute'."""
+        return _NORM_RE.sub("", (text or "").lower())
 
     @staticmethod
     def _is_safe_cross_lang_kw(kw: str) -> bool:
         """Guard short ASCII words (like 'why') from triggering accidental matches in other locales."""
-        s = kw.strip().lower().replace(" ", "")
+        s = _NORM_RE.sub("", (kw or "").lower())
         if not s:
             return False
         if s.isascii():
@@ -53,100 +74,56 @@ class LLMClient:
         return len(s) >= 2
 
     def analyze_checkin(self, user_text: str, lang: str = None):
-        """Map user text to matched habits and generate personalized advice in active language."""
+        """Map user text to matched habits and generate localized advice in active language."""
         active_lang = resolve_language(lang or self.lang)
         catalog = get_habits_catalog(active_lang)
 
         matched_ids = []
-        user_lower = (user_text or "").lower().replace(" ", "")
-        for habit in catalog:
-            found = False
-            # 1. Exact match against active language's keywords
-            for kw in habit["keywords"]:
-                if kw.lower().replace(" ", "") in user_lower:
-                    found = True
-                    break
-            # 2. Safe cross-language matching (e.g. English keyword typed while UI is Korean)
-            if not found:
-                for kw in habit.get("all_keywords", []):
-                    if self._is_safe_cross_lang_kw(kw) and kw.lower().replace(" ", "") in user_lower:
+        raw_text = (user_text or "").strip()
+        user_norm = self._normalize_text(raw_text)
+        if user_norm:
+            for habit in catalog:
+                hid = habit["id"]
+                found = False
+                # 1. Match normalized active language keywords
+                for kw in habit["keywords"]:
+                    kw_norm = self._normalize_text(kw)
+                    if kw_norm and kw_norm in user_norm:
                         found = True
                         break
-            if found:
-                matched_ids.append(habit["id"])
+                # 2. Match flexible multi-word conversational phrasing patterns
+                if not found and hid in _EXTRA_PHRASE_PATTERNS:
+                    for pat in _EXTRA_PHRASE_PATTERNS[hid]:
+                        if pat.search(raw_text):
+                            found = True
+                            break
+                # 3. Safe cross-language matching (e.g. English keyword typed while UI is Korean)
+                if not found:
+                    for kw in habit.get("all_keywords", []):
+                        kw_norm = self._normalize_text(kw)
+                        if kw_norm and self._is_safe_cross_lang_kw(kw) and kw_norm in user_norm:
+                            found = True
+                            break
+                if found:
+                    matched_ids.append(hid)
 
-        if self.provider in ["grok", "openai", "gemini"] and self.api_key:
-            try:
-                return self._call_llm_api(user_text, matched_ids, active_lang, catalog)
-            except Exception as e:
-                print(f"[!] LLM call failed ({e}), falling back to local NLP engine.")
+        return self._synthesize_coaching(matched_ids, active_lang, catalog)
 
-        return self._local_nlp_synthesize(user_text, matched_ids, active_lang, catalog)
-
-    def _call_llm_api(self, user_text: str, pre_matched: list, active_lang: str, catalog: list):
-        import requests
-        catalog_summary = "\n".join(f"{h['id']}: [{h['category']}] {h['name']}" for h in catalog)
-        system_prompt = tr("llm_system_prompt", active_lang, catalog=catalog_summary)
-        user_prompt = tr("llm_user_msg", active_lang, text=user_text, pre_matched=pre_matched)
-
-        content = None
-        if self.provider in ["grok", "openai"]:
-            url = "https://api.x.ai/v1/chat/completions" if self.provider == "grok" else "https://api.openai.com/v1/chat/completions"
-            headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
-            payload = {
-                "model": "grok-beta" if self.provider == "grok" else "gpt-4o-mini",
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                "response_format": {"type": "json_object"}
-            }
-            res = requests.post(url, headers=headers, json=payload, timeout=15)
-            if res.status_code == 200:
-                data = res.json()
-                content = json.loads(data["choices"][0]["message"]["content"])
-
-        elif self.provider == "gemini":
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={self.api_key}"
-            payload = {
-                "contents": [{
-                    "parts": [{"text": f"{system_prompt}\n\n{user_prompt}"}]
-                }],
-                "generationConfig": {"responseMimeType": "application/json"}
-            }
-            res = requests.post(url, json=payload, timeout=15)
-            if res.status_code == 200:
-                data = res.json()
-                raw_text = data["candidates"][0]["content"]["parts"][0]["text"]
-                content = json.loads(raw_text)
-
-        if isinstance(content, dict):
-            raw_ids = content.get("matched_habit_ids") or []
-            clean_ids = []
-            for x in raw_ids:
-                if isinstance(x, int) and 1 <= x <= 35 and x not in clean_ids:
-                    clean_ids.append(x)
-            coaching = str(content.get("coaching_message") or "").strip()
-            if coaching:
-                return clean_ids, coaching
-
-        return self._local_nlp_synthesize(user_text, pre_matched, active_lang, catalog)
-
-    def _local_nlp_synthesize(self, user_text: str, matched_ids: list, active_lang: str = None, catalog: list = None):
+    def _synthesize_coaching(self, matched_ids: list, active_lang: str = None, catalog: list = None):
         lang = resolve_language(active_lang or self.lang)
         cat = catalog or get_habits_catalog(lang)
         if not matched_ids:
             matched_ids = []
-            advice = tr("llm_no_match", lang)
+            advice = tr("nlp_no_match", lang)
         else:
             names = [h["name"] for h in cat if h["id"] in matched_ids]
-            advice = tr("llm_success_advice", lang, names=", ".join(names[:2]), count=len(matched_ids))
+            advice = tr("nlp_success_advice", lang, names=", ".join(names[:2]), count=len(matched_ids))
         return matched_ids, advice
 
 
 class LifeOSSecretary:
     """Manages SQLite primary timeline + Excel dual sync for CLI check-ins and coaching."""
-    def __init__(self, excel_path=None, llm_client=None, lang=None):
+    def __init__(self, excel_path=None, nlp_client=None, lang=None):
         from database import DatabaseManager
         from assistant_engine import AssistantEngine
         self.db = DatabaseManager()
@@ -157,7 +134,7 @@ class LifeOSSecretary:
             self.db.set_setting("excel_path", str(self.excel_path))
         else:
             self.excel_path = self.db._resolve_excel_target(auto_create=False)
-        self.engine = AssistantEngine(self.db, llm_client=llm_client)
+        self.engine = AssistantEngine(self.db, nlp_client=nlp_client)
 
     def check_in(self, message: str, day_col_index: int = None, channel: str = "CLI / Assistant"):
         """Process natural language check-in into SQLite DB + Excel dual sync."""

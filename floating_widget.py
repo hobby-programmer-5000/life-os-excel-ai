@@ -28,6 +28,8 @@ from i18n import (
     LANGUAGE_LABELS,
 )
 from i18n_personas import get_personas
+from app_icon import apply_tk_app_icon
+from ui_theme import THEME, get_tk_lucide_icon
 
 try:
     import winsound
@@ -91,6 +93,7 @@ class FloatingAssistantWidget:
 
         # Setup main floating window properties (follows detected/selected language)
         self.root.title(get_app_name(self._lang()))
+        apply_tk_app_icon(self.root, cache_owner=self)
         if sys.platform.startswith("win"):
             self.root.overrideredirect(True)
         try:
@@ -106,23 +109,32 @@ class FloatingAssistantWidget:
 
         screen_w = self.root.winfo_screenwidth()
         screen_h = self.root.winfo_screenheight()
-        w, h = 370, 540
+        w, h = 392, 540
         x = screen_w - w - 40
         y = max(40, screen_h - h - 70)
         self.root.geometry(f"{w}x{h}+{x}+{y}")
 
-        # Modern Dark Color Palette
-        self.c_bg = "#0F172A"
-        self.c_card = "#1E293B"
-        self.c_border = "#334155"
-        self.c_text = "#F8FAFC"
-        self.c_sub = "#94A3B8"
-        self.c_accent = "#38BDF8"
-        self.c_green = "#10B981"
-        self.c_gold = "#F59E0B"
-        self.c_purple = "#A855F7"
+        # Modern Minimal 60-30-10 Obsidian & Zinc Palette (see ui_theme.py)
+        self.c_bg = THEME["bg"]
+        self.c_card = THEME["card"]
+        self.c_surface_alt = THEME["surface_alt"]
+        self.c_border = THEME["border"]
+        self.c_border_strong = THEME["border_strong"]
+        self.c_text = THEME["text"]
+        self.c_sub = THEME["sub"]
+        self.c_muted = THEME["muted"]
+        self.c_cta_bg = THEME["cta_bg"]
+        self.c_cta_fg = THEME["cta_fg"]
+        self.c_accent = THEME["accent"]
+        self.c_green = THEME["green"]
+        self.c_green_btn = THEME["green_btn"]
+        self.c_gold = THEME["gold"]
+        self.c_warn_bg = THEME["warn_bg"]
+        self.c_warn_border = THEME["warn_border"]
+        self.c_warn_fg = THEME["warn_fg"]
 
         self.root.configure(bg=self.c_bg)
+        self._configure_ttk_styles()
 
         self._build_ui()
         self._bind_mouse_events()
@@ -140,6 +152,142 @@ class FloatingAssistantWidget:
 
     def _t(self, key: str, **kwargs) -> str:
         return tr(key, self._lang(), **kwargs)
+
+    def _configure_ttk_styles(self):
+        """Apply dark neutral clam styling for scrollbars and comboboxes."""
+        try:
+            style = ttk.Style(self.root)
+            if "clam" in style.theme_names():
+                style.theme_use("clam")
+            style.configure(
+                "Minimal.Vertical.TScrollbar",
+                background=self.c_border,
+                troughcolor=self.c_bg,
+                bordercolor=self.c_bg,
+                arrowcolor=self.c_sub,
+                relief="flat",
+                width=9,
+            )
+            style.map(
+                "Minimal.Vertical.TScrollbar",
+                background=[("active", self.c_border_strong)],
+            )
+            style.configure(
+                "Minimal.TCombobox",
+                fieldbackground=self.c_surface_alt,
+                background=self.c_surface_alt,
+                foreground=self.c_text,
+                bordercolor=self.c_border,
+                darkcolor=self.c_surface_alt,
+                lightcolor=self.c_border,
+                arrowcolor=self.c_sub,
+                selectbackground=self.c_border_strong,
+                selectforeground=self.c_text,
+            )
+            style.map(
+                "Minimal.TCombobox",
+                fieldbackground=[("readonly", self.c_surface_alt)],
+                foreground=[("readonly", self.c_text)],
+            )
+            self.root.option_add("*TCombobox*Listbox.background", self.c_card)
+            self.root.option_add("*TCombobox*Listbox.foreground", self.c_text)
+            self.root.option_add("*TCombobox*Listbox.selectBackground", self.c_border_strong)
+            self.root.option_add("*TCombobox*Listbox.selectForeground", self.c_text)
+        except Exception:
+            pass
+
+    def _ico(self, name: str, size: int = 14, color: str = None, bg: str = None, stroke_width: float = 2.0):
+        """Return a cached Lucide PhotoImage rendered cleanly on the target background."""
+        return get_tk_lucide_icon(
+            self,
+            name,
+            size=size,
+            color=color or self.c_sub,
+            bg=bg or self.c_card,
+            stroke_width=stroke_width,
+        )
+
+    def _bind_hover(self, widget, bg_idle: str, bg_hover: str, fg_idle: str = None, fg_hover: str = None, icons: tuple = None):
+        """Attach smooth hover transitions while preserving disabled button state."""
+        def _enter(_e):
+            try:
+                if str(widget.cget("state")) == "disabled":
+                    return
+            except Exception:
+                pass
+            cfg = {"bg": bg_hover}
+            if fg_hover:
+                cfg["fg"] = fg_hover
+            if icons:
+                cfg["image"] = icons[1]
+            widget.config(**cfg)
+
+        def _leave(_e):
+            cfg = {"bg": bg_idle}
+            if fg_idle:
+                cfg["fg"] = fg_idle
+            if icons:
+                cfg["image"] = icons[0]
+            widget.config(**cfg)
+
+        widget.bind("<Enter>", _enter)
+        widget.bind("<Leave>", _leave)
+
+    def _make_dark_entry(self, parent, width: int = 0, show: str = None, font_size: int = 9):
+        """Create a uniform Modern Minimal dark Entry input with 1px hairline border."""
+        kwargs = {
+            "font": (self._font(), font_size),
+            "bg": self.c_surface_alt,
+            "fg": self.c_text,
+            "insertbackground": self.c_text,
+            "disabledbackground": self.c_card,
+            "disabledforeground": self.c_muted,
+            "relief": tk.FLAT,
+            "highlightbackground": self.c_border,
+            "highlightcolor": self.c_border_strong,
+            "highlightthickness": 1,
+        }
+        if width > 0:
+            kwargs["width"] = width
+        if show:
+            kwargs["show"] = show
+        return tk.Entry(parent, **kwargs)
+
+    def _make_dialog_header(self, win, icon_name: str, title: str, subtitle: str = None):
+        """Build a unified Modern Minimal header band + 1px hairline separator for popups."""
+        f_fam = self._font()
+        head = tk.Frame(win, bg=self.c_card)
+        head.pack(fill=tk.X)
+        row = tk.Frame(head, bg=self.c_card)
+        row.pack(fill=tk.X, padx=14, pady=(10, 4 if subtitle else 10))
+        tk.Label(
+            row,
+            image=self._ico(icon_name, size=16, color=self.c_text, bg=self.c_card),
+            bg=self.c_card,
+        ).pack(side=tk.LEFT, padx=(0, 8))
+        tk.Label(
+            row, text=title, font=(f_fam, 10, "bold"),
+            bg=self.c_card, fg=self.c_text, anchor="w",
+        ).pack(side=tk.LEFT, fill=tk.X, expand=True)
+        lbl_sub = None
+        if subtitle:
+            lbl_sub = tk.Label(
+                head, text=subtitle, font=(f_fam, 8),
+                bg=self.c_card, fg=self.c_sub, justify=tk.LEFT, anchor="w", wraplength=510,
+            )
+            lbl_sub.pack(fill=tk.X, padx=14, pady=(0, 8))
+        tk.Frame(win, bg=self.c_border, height=1).pack(fill=tk.X)
+        return head, lbl_sub
+
+    def _make_card_section_label(self, parent, icon_name: str, text: str, bg: str = None, padx: int = 10, pady=(6, 2)):
+        """Build an inline monochrome icon + muted heading inside settings/bot cards."""
+        bg = bg or self.c_card
+        row = tk.Frame(parent, bg=bg)
+        row.pack(fill=tk.X, padx=padx, pady=pady)
+        tk.Label(row, image=self._ico(icon_name, size=13, color=self.c_sub, bg=bg), bg=bg).pack(side=tk.LEFT, padx=(0, 6))
+        lbl = tk.Label(row, text=text, font=(self._font(), 8, "bold"), bg=bg, fg=self.c_text, anchor="w")
+        lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        return row, lbl
 
     def _close_child_popups(self):
         for attr in ("_full_checklist_win", "_keyword_help_win", "_bot_settings_win"):
@@ -188,117 +336,243 @@ class FloatingAssistantWidget:
         lang = self._lang()
         self._placeholder = self._t("entry_placeholder")
 
-        self.main_frame = tk.Frame(self.root, bg=self.c_bg, highlightbackground=self.c_accent, highlightthickness=1)
+        self.main_frame = tk.Frame(
+            self.root, bg=self.c_bg,
+            highlightbackground=self.c_border, highlightthickness=1,
+        )
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
-        # 1. Top Header Bar
-        header = tk.Frame(self.main_frame, bg=self.c_card, height=36)
+        # 1. Top Header Bar (Calm Monochrome + Growth Graph Anchor)
+        header = tk.Frame(self.main_frame, bg=self.c_card, height=40)
         header.pack(fill=tk.X, padx=0, pady=0)
+        tk.Frame(self.main_frame, bg=self.c_border, height=1).pack(fill=tk.X)
+
+        # Pack right-side window controls FIRST so long titles never clip them
+        btn_box = tk.Frame(header, bg=self.c_card)
+        btn_box.pack(side=tk.RIGHT, padx=(2, 6), pady=5)
+
+        ico_set_idle = self._ico("settings", size=14, color=self.c_sub, bg=self.c_card)
+        ico_set_hov = self._ico("settings", size=14, color=self.c_text, bg=self.c_surface_alt)
+        btn_settings = tk.Label(btn_box, image=ico_set_idle, bg=self.c_card, cursor="hand2", padx=4, pady=4)
+        btn_settings.pack(side=tk.LEFT, padx=1)
+        btn_settings.bind("<Button-1>", lambda e: self.open_settings_dialog())
+        self._bind_hover(btn_settings, self.c_card, self.c_surface_alt, icons=(ico_set_idle, ico_set_hov))
+
+        ico_min_idle = self._ico("minus", size=14, color=self.c_sub, bg=self.c_card)
+        ico_min_hov = self._ico("minus", size=14, color=self.c_text, bg=self.c_surface_alt)
+        btn_min = tk.Label(btn_box, image=ico_min_idle, bg=self.c_card, cursor="hand2", padx=4, pady=4)
+        btn_min.pack(side=tk.LEFT, padx=1)
+        btn_min.bind("<Button-1>", lambda e: self.hide_to_tray())
+        self._bind_hover(btn_min, self.c_card, self.c_surface_alt, icons=(ico_min_idle, ico_min_hov))
+
+        ico_close_idle = self._ico("x", size=14, color=self.c_sub, bg=self.c_card)
+        ico_close_hov = self._ico("x", size=14, color="#F87171", bg=self.c_surface_alt)
+        btn_close = tk.Label(btn_box, image=ico_close_idle, bg=self.c_card, cursor="hand2", padx=4, pady=4)
+        btn_close.pack(side=tk.LEFT, padx=1)
+        btn_close.bind("<Button-1>", lambda e: self.handle_close_button())
+        self._bind_hover(btn_close, self.c_card, self.c_surface_alt, icons=(ico_close_idle, ico_close_hov))
 
         title_box = tk.Frame(header, bg=self.c_card)
-        title_box.pack(side=tk.LEFT, padx=10, pady=6)
-        self.lbl_icon = tk.Label(title_box, text="🤖", font=("Segoe UI Emoji", 12), bg=self.c_card, fg=self.c_text)
-        self.lbl_icon.pack(side=tk.LEFT)
-        self.lbl_title = tk.Label(title_box, text=f" {get_app_name(lang)}", font=(f_fam, 10, "bold"), bg=self.c_card, fg=self.c_accent)
+        title_box.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(10, 4), pady=7)
+        self.lbl_icon = tk.Label(
+            title_box,
+            image=self._ico("trending-up", size=16, color=self.c_green, bg=self.c_card),
+            bg=self.c_card,
+        )
+        self.lbl_icon.pack(side=tk.LEFT, padx=(0, 6))
+        self.lbl_title = tk.Label(
+            title_box, text="Life OS",
+            font=(f_fam, 9, "bold"), bg=self.c_card, fg=self.c_text,
+        )
         self.lbl_title.pack(side=tk.LEFT)
+        self.lbl_persona = tk.Label(
+            title_box, text="",
+            font=(f_fam, 8), bg=self.c_card, fg=self.c_sub, anchor="w",
+        )
+        self.lbl_persona.pack(side=tk.LEFT, padx=(5, 0))
         self.update_persona_header()
-
-        btn_box = tk.Frame(header, bg=self.c_card)
-        btn_box.pack(side=tk.RIGHT, padx=6)
-
-        btn_settings = tk.Label(btn_box, text="⚙️", font=("Segoe UI Emoji", 10), bg=self.c_card, fg=self.c_sub, cursor="hand2")
-        btn_settings.pack(side=tk.LEFT, padx=3)
-        btn_settings.bind("<Button-1>", lambda e: self.open_settings_dialog())
-
-        btn_min = tk.Label(btn_box, text="━", font=(f_fam, 9, "bold"), bg=self.c_card, fg=self.c_sub, cursor="hand2")
-        btn_min.pack(side=tk.LEFT, padx=4)
-        btn_min.bind("<Button-1>", lambda e: self.hide_to_tray())
-
-        btn_close = tk.Label(btn_box, text="✕", font=(f_fam, 10, "bold"), bg=self.c_card, fg="#EF4444", cursor="hand2")
-        btn_close.pack(side=tk.LEFT, padx=4)
-        btn_close.bind("<Button-1>", lambda e: self.handle_close_button())
 
         # 2. Date Navigation Bar
         date_bar = tk.Frame(self.main_frame, bg=self.c_bg)
         date_bar.pack(fill=tk.X, padx=10, pady=(8, 4))
 
-        self.btn_prev = tk.Button(date_bar, text=self._t("btn_prev_day"), font=(f_fam, 8), bg=self.c_card, fg=self.c_text,
-                                  relief=tk.FLAT, padx=6, pady=2, cursor="hand2", command=lambda: self.navigate_date(-1))
+        self.btn_prev = tk.Button(
+            date_bar, text=self._t("btn_prev_day"), font=(f_fam, 8),
+            bg=self.c_card, fg=self.c_sub,
+            activebackground=self.c_surface_alt, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=7, pady=2, cursor="hand2", command=lambda: self.navigate_date(-1),
+        )
         self.btn_prev.pack(side=tk.LEFT)
+        self._bind_hover(self.btn_prev, self.c_card, self.c_surface_alt, self.c_sub, self.c_text)
 
         self.lbl_date = tk.Label(date_bar, text="", font=(f_fam, 9, "bold"), bg=self.c_bg, fg=self.c_text)
         self.lbl_date.pack(side=tk.LEFT, expand=True)
 
-        self.btn_next = tk.Button(date_bar, text=self._t("btn_next_day"), font=(f_fam, 8), bg=self.c_card, fg=self.c_text,
-                                  relief=tk.FLAT, padx=6, pady=2, cursor="hand2", command=lambda: self.navigate_date(1))
+        self.btn_next = tk.Button(
+            date_bar, text=self._t("btn_next_day"), font=(f_fam, 8),
+            bg=self.c_card, fg=self.c_sub,
+            activebackground=self.c_surface_alt, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=7, pady=2, cursor="hand2", command=lambda: self.navigate_date(1),
+        )
         self.btn_next.pack(side=tk.RIGHT)
+        self._bind_hover(self.btn_next, self.c_card, self.c_surface_alt, self.c_sub, self.c_text)
 
-        self.btn_today = tk.Button(date_bar, text=self._t("btn_today"), font=(f_fam, 8), bg=self.c_card, fg=self.c_accent,
-                                   relief=tk.FLAT, padx=5, pady=2, cursor="hand2", command=self.go_to_today)
+        self.btn_today = tk.Button(
+            date_bar, text=self._t("btn_today"), font=(f_fam, 8),
+            bg=self.c_card, fg=self.c_muted,
+            activebackground=self.c_surface_alt, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=6, pady=2, cursor="hand2", command=self.go_to_today,
+        )
         self.btn_today.pack(side=tk.RIGHT, padx=4)
 
-        # 3. Active Nudge Card
-        self.nudge_card = tk.Frame(self.main_frame, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
+        # 3. Active Nudge Card (1 Primary CTA + 2 Restrained Ghost Actions)
+        self.nudge_card = tk.Frame(
+            self.main_frame, bg=self.c_card,
+            highlightbackground=self.c_border, highlightthickness=1,
+        )
         self.nudge_card.pack(fill=tk.X, padx=10, pady=6)
 
-        self.lbl_nudge_role = tk.Label(self.nudge_card, text=self._t("nudge_role_header"), font=(f_fam, 8, "bold"),
-                                       bg=self.c_card, fg=self.c_gold, anchor="w")
-        self.lbl_nudge_role.pack(fill=tk.X, padx=8, pady=(6, 2))
+        role_row = tk.Frame(self.nudge_card, bg=self.c_card)
+        role_row.pack(fill=tk.X, padx=9, pady=(7, 2))
+        tk.Label(
+            role_row,
+            image=self._ico("bot", size=12, color=self.c_muted, bg=self.c_card),
+            bg=self.c_card,
+        ).pack(side=tk.LEFT, padx=(0, 5))
+        self.lbl_nudge_role = tk.Label(
+            role_row, text=self._t("nudge_role_header"), font=(f_fam, 8, "bold"),
+            bg=self.c_card, fg=self.c_sub, anchor="w",
+        )
+        self.lbl_nudge_role.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-        self.lbl_nudge_text = tk.Label(self.nudge_card, text=self._t("nudge_loading"), font=(f_fam, 9),
-                                       bg=self.c_card, fg=self.c_text, wraplength=325, justify=tk.LEFT)
-        self.lbl_nudge_text.pack(fill=tk.X, padx=8, pady=4)
+        self.lbl_nudge_text = tk.Label(
+            self.nudge_card, text=self._t("nudge_loading"), font=(f_fam, 9),
+            bg=self.c_card, fg=self.c_text, wraplength=322, justify=tk.LEFT, anchor="w",
+        )
+        self.lbl_nudge_text.pack(fill=tk.X, padx=9, pady=(3, 5))
 
         self.btn_row = tk.Frame(self.nudge_card, bg=self.c_card)
-        self.btn_row.pack(fill=tk.X, padx=8, pady=(4, 8))
+        self.btn_row.pack(fill=tk.X, padx=9, pady=(2, 8))
 
-        self.btn_done = tk.Button(self.btn_row, text=self._t("btn_done"), font=(f_fam, 8, "bold"),
-                                  bg=self.c_green, fg="#FFFFFF", relief=tk.FLAT, padx=6, pady=3, cursor="hand2",
-                                  command=lambda: self.on_nudge_action("completed"))
-        self.btn_done.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
+        self.btn_done = tk.Button(
+            self.btn_row,
+            image=self._ico("check", size=13, color="#FFFFFF", bg=self.c_green_btn),
+            compound=tk.LEFT, text=f" {self._t('btn_done')}".lstrip(),
+            font=(f_fam, 8, "bold"),
+            bg=self.c_green_btn, fg="#FFFFFF",
+            activebackground=self.c_green, activeforeground="#FFFFFF",
+            relief=tk.FLAT, bd=0, padx=7, pady=4, cursor="hand2",
+            command=lambda: self.on_nudge_action("completed"),
+        )
+        # Keep exact text string on btn_done for i18n/regression test compatibility
+        self.btn_done.config(text=self._t("btn_done"))
+        self.btn_done.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 4))
+        self._bind_hover(self.btn_done, self.c_green_btn, self.c_green)
 
-        self.btn_doing = tk.Button(self.btn_row, text=self._t("btn_doing"), font=(f_fam, 8, "bold"),
-                                   bg="#2563EB", fg="#FFFFFF", relief=tk.FLAT, padx=6, pady=3, cursor="hand2",
-                                   command=lambda: self.on_nudge_action("doing_now"))
-        self.btn_doing.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
+        self.btn_doing = tk.Button(
+            self.btn_row,
+            image=self._ico("play", size=12, color=self.c_text, bg=self.c_surface_alt),
+            compound=tk.LEFT, text=self._t("btn_doing"),
+            font=(f_fam, 8),
+            bg=self.c_surface_alt, fg=self.c_text,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=7, pady=4, cursor="hand2",
+            command=lambda: self.on_nudge_action("doing_now"),
+        )
+        self.btn_doing.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=(0, 4))
+        self._bind_hover(self.btn_doing, self.c_surface_alt, self.c_border)
 
-        self.btn_hold = tk.Button(self.btn_row, text=self._t("btn_hold"), font=(f_fam, 8),
-                                  bg="#475569", fg="#FFFFFF", relief=tk.FLAT, padx=6, pady=3, cursor="hand2",
-                                  command=lambda: self.on_nudge_action("postponed"))
-        self.btn_hold.pack(side=tk.LEFT, expand=True, fill=tk.X, padx=2)
+        self.btn_hold = tk.Button(
+            self.btn_row,
+            image=self._ico("clock", size=12, color=self.c_sub, bg=self.c_card),
+            compound=tk.LEFT, text=self._t("btn_hold"),
+            font=(f_fam, 8),
+            bg=self.c_card, fg=self.c_sub,
+            activebackground=self.c_surface_alt, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=7, pady=4, cursor="hand2",
+            command=lambda: self.on_nudge_action("postponed"),
+        )
+        self.btn_hold.pack(side=tk.LEFT, expand=True, fill=tk.X)
+        self._bind_hover(self.btn_hold, self.c_card, self.c_surface_alt, self.c_sub, self.c_text)
 
         # 5 & 6. Pack bottom controls FIRST so long coaching messages never clip them
         footer = tk.Frame(self.main_frame, bg=self.c_bg)
-        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(0, 6))
+        footer.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(0, 7))
 
-        btn_open = tk.Label(footer, text=self._t("btn_open_excel"), font=(f_fam, 7, "underline"), bg=self.c_bg, fg=self.c_green, cursor="hand2")
-        btn_open.pack(side=tk.RIGHT, padx=(6, 0))
+        ico_xlsx_idle = self._ico("file-spreadsheet", size=12, color=self.c_sub, bg=self.c_bg)
+        ico_xlsx_hov = self._ico("file-spreadsheet", size=12, color=self.c_text, bg=self.c_bg)
+        btn_open = tk.Label(
+            footer, image=ico_xlsx_idle, compound=tk.LEFT,
+            text=f" {self._t('btn_open_excel')}",
+            font=(f_fam, 8), bg=self.c_bg, fg=self.c_sub, cursor="hand2",
+        )
+        btn_open.pack(side=tk.RIGHT, padx=(8, 0))
         btn_open.bind("<Button-1>", lambda e: self.open_excel_directly())
+        self._bind_hover(btn_open, self.c_bg, self.c_bg, self.c_sub, self.c_text, icons=(ico_xlsx_idle, ico_xlsx_hov))
 
-        btn_sync = tk.Label(footer, text=self._t("btn_sync"), font=(f_fam, 7, "underline"), bg=self.c_bg, fg=self.c_accent, cursor="hand2")
-        btn_sync.pack(side=tk.RIGHT, padx=(6, 2))
+        ico_sync_idle = self._ico("refresh-cw", size=12, color=self.c_sub, bg=self.c_bg)
+        ico_sync_hov = self._ico("refresh-cw", size=12, color=self.c_text, bg=self.c_bg)
+        btn_sync = tk.Label(
+            footer, image=ico_sync_idle, compound=tk.LEFT,
+            text=f" {self._t('btn_sync')}",
+            font=(f_fam, 8), bg=self.c_bg, fg=self.c_sub, cursor="hand2",
+        )
+        btn_sync.pack(side=tk.RIGHT, padx=(6, 4))
         btn_sync.bind("<Button-1>", lambda e: self.manual_sync_excel())
+        self._bind_hover(btn_sync, self.c_bg, self.c_bg, self.c_sub, self.c_text, icons=(ico_sync_idle, ico_sync_hov))
 
-        self.lbl_status = tk.Label(footer, text=self._t("status_auto_sync"), font=(f_fam, 7), bg=self.c_bg, fg=self.c_sub, anchor="w")
+        status_wrap = tk.Frame(footer, bg=self.c_bg)
+        status_wrap.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        tk.Label(status_wrap, text="●", font=(f_fam, 7), bg=self.c_bg, fg=self.c_green).pack(side=tk.LEFT, padx=(0, 4))
+        self.lbl_status = tk.Label(
+            status_wrap, text=self._t("status_auto_sync"),
+            font=(f_fam, 8), bg=self.c_bg, fg=self.c_muted, anchor="w",
+        )
         self.lbl_status.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-        # 5. Natural Language Check-in Box
-        input_box_frame = tk.Frame(self.main_frame, bg=self.c_card)
+        # 5. Natural Language Check-in Box (Single Crisp Monochrome CTA)
+        input_box_frame = tk.Frame(
+            self.main_frame, bg=self.c_card,
+            highlightbackground=self.c_border, highlightthickness=1,
+        )
         input_box_frame.pack(side=tk.BOTTOM, fill=tk.X, padx=10, pady=(4, 6))
 
-        btn_send = tk.Button(input_box_frame, text=self._t("btn_send"), font=(f_fam, 8, "bold"),
-                             bg=self.c_accent, fg="#0F172A", relief=tk.FLAT, padx=8, pady=2, cursor="hand2",
-                             command=self.submit_natural_checkin)
-        btn_send.pack(side=tk.RIGHT, padx=(2, 4), pady=4)
+        btn_send = tk.Button(
+            input_box_frame,
+            image=self._ico("send-horizontal", size=12, color=self.c_cta_fg, bg=self.c_cta_bg),
+            compound=tk.LEFT, text=self._t("btn_send"),
+            font=(f_fam, 8, "bold"),
+            bg=self.c_cta_bg, fg=self.c_cta_fg,
+            activebackground="#FFFFFF", activeforeground=self.c_cta_fg,
+            relief=tk.FLAT, bd=0, padx=9, pady=3, cursor="hand2",
+            command=self.submit_natural_checkin,
+        )
+        btn_send.pack(side=tk.RIGHT, padx=(3, 5), pady=5)
+        self._bind_hover(btn_send, self.c_cta_bg, "#FFFFFF")
 
-        btn_help = tk.Button(input_box_frame, text="?", font=(f_fam, 8, "bold"),
-                             bg="#334155", fg=self.c_gold, relief=tk.FLAT, padx=6, pady=2, cursor="hand2",
-                             command=self.open_keyword_help_dialog)
-        btn_help.pack(side=tk.RIGHT, padx=(2, 0), pady=4)
+        btn_help = tk.Button(
+            input_box_frame, text="?", font=(f_fam, 8, "bold"),
+            bg=self.c_surface_alt, fg=self.c_sub,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=7, pady=3, cursor="hand2",
+            command=self.open_keyword_help_dialog,
+        )
+        btn_help.pack(side=tk.RIGHT, padx=(2, 0), pady=5)
+        self._bind_hover(btn_help, self.c_surface_alt, self.c_border, self.c_sub, self.c_text)
 
-        self.entry_checkin = tk.Entry(input_box_frame, font=(f_fam, 9), bg="#0F172A", fg=self.c_sub,
-                                      insertbackground=self.c_text, relief=tk.FLAT, highlightbackground=self.c_border, highlightthickness=1)
-        self.entry_checkin.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(4, 4), pady=4, ipady=3)
+        self.entry_checkin = tk.Entry(
+            input_box_frame, font=(f_fam, 9),
+            bg=self.c_surface_alt, fg=self.c_muted,
+            insertbackground=self.c_text, relief=tk.FLAT,
+            highlightbackground=self.c_border, highlightcolor=self.c_border_strong, highlightthickness=1,
+        )
+        self.entry_checkin.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 4), pady=5, ipady=4)
         self.entry_checkin.insert(0, self._placeholder)
         self.entry_checkin.bind("<FocusIn>", self._on_entry_focus_in)
         self.entry_checkin.bind("<FocusOut>", self._on_entry_focus_out)
@@ -306,30 +580,50 @@ class FloatingAssistantWidget:
 
         # 4. Habits Quick View / Checklist Container
         mid_label_bar = tk.Frame(self.main_frame, bg=self.c_bg)
-        mid_label_bar.pack(fill=tk.X, padx=10, pady=(2, 2))
+        mid_label_bar.pack(fill=tk.X, padx=10, pady=(4, 4))
 
-        self.lbl_habits_stat = tk.Label(mid_label_bar, text="", font=(f_fam, 8, "bold"),
-                                        bg=self.c_bg, fg=self.c_accent)
+        self.lbl_habits_stat = tk.Label(
+            mid_label_bar, text="", font=(f_fam, 8, "bold"),
+            bg=self.c_bg, fg=self.c_text,
+        )
         self.lbl_habits_stat.pack(side=tk.LEFT)
 
-        self.btn_shuffle = tk.Button(mid_label_bar, text=self._t("btn_shuffle"), font=(f_fam, 7, "bold"),
-                                     bg=self.c_card, fg=self.c_gold, relief=tk.FLAT, padx=4, pady=0, cursor="hand2",
-                                     command=self.shuffle_quick_habits)
-        self.btn_shuffle.pack(side=tk.LEFT, padx=6)
+        self._ico_shuffle = self._ico("shuffle", size=12, color=self.c_sub, bg=self.c_surface_alt)
+        self._ico_all_scroll = self._ico("list-checks", size=12, color=self.c_text, bg=self.c_surface_alt)
+        self.btn_shuffle = tk.Button(
+            mid_label_bar, image=self._ico_shuffle, compound=tk.LEFT,
+            text=self._t("btn_shuffle"), font=(f_fam, 8),
+            bg=self.c_surface_alt, fg=self.c_sub,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=6, pady=1, cursor="hand2",
+            command=self.shuffle_quick_habits,
+        )
+        self.btn_shuffle.pack(side=tk.LEFT, padx=8)
+        self._bind_hover(self.btn_shuffle, self.c_surface_alt, self.c_border, self.c_sub, self.c_text)
 
-        btn_full_list = tk.Label(mid_label_bar, text=self._t("link_full_list"), font=(f_fam, 8, "underline"),
-                                 bg=self.c_bg, fg=self.c_sub, cursor="hand2")
+        ico_full_idle = self._ico("arrow-up-right", size=12, color=self.c_sub, bg=self.c_bg)
+        ico_full_hov = self._ico("arrow-up-right", size=12, color=self.c_text, bg=self.c_bg)
+        btn_full_list = tk.Label(
+            mid_label_bar, image=ico_full_idle, compound=tk.RIGHT,
+            text=f"{self._t('link_full_list')} ",
+            font=(f_fam, 8), bg=self.c_bg, fg=self.c_sub, cursor="hand2",
+        )
         btn_full_list.pack(side=tk.RIGHT)
         btn_full_list.bind("<Button-1>", lambda e: self.open_full_checklist_window())
+        self._bind_hover(btn_full_list, self.c_bg, self.c_bg, self.c_sub, self.c_text, icons=(ico_full_idle, ico_full_hov))
 
-        self.quick_list_frame = tk.Frame(self.main_frame, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
-        self.quick_list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=2)
+        self.quick_list_frame = tk.Frame(
+            self.main_frame, bg=self.c_card,
+            highlightbackground=self.c_border, highlightthickness=1,
+        )
+        self.quick_list_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 4))
         self._populate_quick_habits()
 
         self._build_context_menu()
 
     def _bind_mouse_events(self):
-        for widget in [self.main_frame, self.lbl_title]:
+        for widget in [self.main_frame, self.lbl_title, self.lbl_persona]:
             widget.bind("<ButtonPress-1>", self._start_drag)
             widget.bind("<ButtonRelease-1>", self._stop_drag)
             widget.bind("<B1-Motion>", self._on_drag)
@@ -349,7 +643,11 @@ class FloatingAssistantWidget:
         self.root.geometry(f"+{x}+{y}")
 
     def _build_context_menu(self):
-        self.context_menu = tk.Menu(self.root, tearoff=0, bg=self.c_card, fg=self.c_text, activebackground=self.c_accent, activeforeground="#0F172A")
+        self.context_menu = tk.Menu(
+            self.root, tearoff=0,
+            bg=self.c_card, fg=self.c_text,
+            activebackground=self.c_surface_alt, activeforeground=self.c_text,
+        )
         self.context_menu.add_command(label=self._t("menu_nudge"), command=self.trigger_nudge)
         self.context_menu.add_command(label=self._t("menu_full_list"), command=self.open_full_checklist_window)
         self.context_menu.add_command(label=self._t("menu_sync"), command=self.manual_sync_excel)
@@ -379,7 +677,9 @@ class FloatingAssistantWidget:
         self.lbl_date.config(text=format_date_banner(self.current_date, diff, lang))
         prev_txt, today_txt, next_txt = format_date_nav_labels(diff, lang)
         self.btn_prev.config(text=prev_txt)
-        self.btn_today.config(text=today_txt, fg=self.c_sub if diff == 0 else self.c_accent)
+        today_fg = self.c_muted if diff == 0 else self.c_text
+        self.btn_today.config(text=today_txt, fg=today_fg)
+        self._bind_hover(self.btn_today, self.c_card, self.c_surface_alt, today_fg, self.c_text)
         self.btn_next.config(text=next_txt)
         self._populate_quick_habits()
 
@@ -439,7 +739,7 @@ class FloatingAssistantWidget:
             y = self.root.winfo_y()
             if y + req_h > screen_h - 45:
                 y = max(20, screen_h - req_h - 45)
-            self.root.geometry(f"370x{req_h}+{x}+{y}")
+            self.root.geometry(f"392x{req_h}+{x}+{y}")
         except Exception:
             pass
 
@@ -488,10 +788,16 @@ class FloatingAssistantWidget:
         self.lbl_habits_stat.config(text=self._t("stats_header", done=completed_count, total=35))
 
         if mode == "all_scroll":
-            self.btn_shuffle.config(text=self._t("badge_all_scroll"), fg=self.c_accent, command=self.open_settings_dialog)
+            self.btn_shuffle.config(
+                image=self._ico_all_scroll, text=self._t("badge_all_scroll"),
+                fg=self.c_text, command=self.open_settings_dialog,
+            )
             display_ids = list(range(1, 36))
         else:
-            self.btn_shuffle.config(text=self._t("btn_shuffle"), fg=self.c_gold, command=self.shuffle_quick_habits)
+            self.btn_shuffle.config(
+                image=self._ico_shuffle, text=self._t("btn_shuffle"),
+                fg=self.c_sub, command=self.shuffle_quick_habits,
+            )
             self.custom_habit_ids = self._normalize_custom_ids(self.custom_habit_ids, limit)
             display_ids = self.custom_habit_ids
 
@@ -500,7 +806,10 @@ class FloatingAssistantWidget:
         if use_scroll:
             canvas_h = 195 if mode == "all_scroll" else min(195, max(120, len(display_ids) * 24))
             canvas = tk.Canvas(self.quick_list_frame, bg=self.c_card, highlightthickness=0, height=canvas_h)
-            scrollbar = ttk.Scrollbar(self.quick_list_frame, orient="vertical", command=canvas.yview)
+            scrollbar = ttk.Scrollbar(
+                self.quick_list_frame, orient="vertical", command=canvas.yview,
+                style="Minimal.Vertical.TScrollbar",
+            )
             container = tk.Frame(canvas, bg=self.c_card)
 
             container.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
@@ -517,6 +826,9 @@ class FloatingAssistantWidget:
         else:
             container = self.quick_list_frame
 
+        ico_checked = self._ico("square-check", size=14, color=self.c_green, bg=self.c_card)
+        ico_unchecked = self._ico("square", size=14, color=self.c_muted, bg=self.c_card)
+
         for hid in display_ids:
             h = next((x for x in habits if x["id"] == hid), None)
             if not h:
@@ -524,17 +836,18 @@ class FloatingAssistantWidget:
 
             is_done = checks.get(hid, {}).get("status", 0) == 1
             row = tk.Frame(container, bg=self.c_card)
-            row.pack(fill=tk.X, padx=6, pady=2)
+            row.pack(fill=tk.X, padx=7, pady=3)
 
-            chk_txt = "☑" if is_done else "☐"
-            chk_color = self.c_green if is_done else self.c_sub
-            lbl_chk = tk.Label(row, text=chk_txt, font=(f_fam, 10, "bold"), bg=self.c_card, fg=chk_color, cursor="hand2")
-            lbl_chk.pack(side=tk.LEFT, padx=(2, 6))
+            lbl_chk = tk.Label(
+                row, image=ico_checked if is_done else ico_unchecked,
+                bg=self.c_card, cursor="hand2",
+            )
+            lbl_chk.pack(side=tk.LEFT, padx=(1, 7))
             lbl_chk.bind("<Button-1>", lambda e, habit_id=hid: self.toggle_habit(habit_id))
 
             prefix = f"{hid}. " if mode == "all_scroll" else ""
             lbl_name = tk.Label(row, text=f"{prefix}[{h['category']}] {h['name']}", font=(f_fam, 8),
-                                bg=self.c_card, fg=self.c_text if not is_done else self.c_sub, anchor="w", cursor="hand2")
+                                bg=self.c_card, fg=self.c_text if not is_done else self.c_muted, anchor="w", cursor="hand2")
             lbl_name.pack(side=tk.LEFT, fill=tk.X, expand=True)
             lbl_name.bind("<Button-1>", lambda e, habit_id=hid: self.toggle_habit(habit_id))
 
@@ -565,7 +878,7 @@ class FloatingAssistantWidget:
         self._sync_local_seq()
         if self.db.get_setting("auto_sync_excel") == "true":
             _, msg = self.db.sync_to_excel()
-            self._set_status(f"⚡ {msg}")
+            self._set_status(msg)
         self._refresh_date_display()
 
     def play_nudge_sound(self):
@@ -654,7 +967,7 @@ class FloatingAssistantWidget:
         channel = res.get("channel", self._t("channel_mobile_bot"))
         coaching = res.get("coaching", "")
         if coaching:
-            self.lbl_nudge_text.config(text=f"📱 [{channel}]\n{coaching}")
+            self.lbl_nudge_text.config(text=f"[{channel}]\n{coaching}")
         self._set_status(self._t("status_remote_synced", channel=channel))
         self._refresh_date_display()
         self._adjust_window_height()
@@ -677,7 +990,7 @@ class FloatingAssistantWidget:
     def _on_entry_focus_out(self, event):
         if not self.entry_checkin.get().strip():
             self.entry_checkin.insert(0, self._placeholder)
-            self.entry_checkin.config(fg=self.c_sub)
+            self.entry_checkin.config(fg=self.c_muted)
 
     def submit_natural_checkin(self):
         text = self.entry_checkin.get().strip()
@@ -689,14 +1002,14 @@ class FloatingAssistantWidget:
         self._sync_local_seq()
         self.entry_checkin.delete(0, tk.END)
 
-        self.lbl_nudge_text.config(text=f"💬 {res['coaching']}")
+        self.lbl_nudge_text.config(text=res["coaching"])
         self._refresh_date_display()
         self._adjust_window_height()
 
     # --- Manual Excel Sync & Open ---
     def manual_sync_excel(self):
         ok, msg = self.db.sync_to_excel()
-        self._set_status(f"⚡ {msg}")
+        self._set_status(msg)
         if ok:
             messagebox.showinfo(self._t("dlg_excel_sync_title"), self._t("dlg_excel_sync_ok_body", msg=msg), parent=self.root)
         else:
@@ -704,7 +1017,7 @@ class FloatingAssistantWidget:
 
     def open_excel_directly(self):
         ok, msg = self.db.open_excel_file()
-        self._set_status(f"📂 {msg}")
+        self._set_status(msg)
         if not ok:
             messagebox.showwarning(self._t("dlg_excel_open_warn_title"), msg, parent=self.root)
 
@@ -719,6 +1032,7 @@ class FloatingAssistantWidget:
         lang = self._lang()
         win = tk.Toplevel(self.root)
         self._full_checklist_win = win
+        apply_tk_app_icon(win, cache_owner=self)
         date_str = self.current_date.isoformat()
         win.title(self._t("full_win_title", app_name=get_app_name(lang), date=date_str))
         win.geometry("560x660")
@@ -729,20 +1043,37 @@ class FloatingAssistantWidget:
         limit = self._get_quick_habit_limit()
         completed_count = sum(1 for hid in range(1, 36) if checks.get(hid, {}).get("status", 0) == 1)
 
-        header_lbl = tk.Label(win, text=self._t("full_header", date=date_str, done=completed_count),
-                              font=(f_fam, 10, "bold"), bg=self.c_card, fg=self.c_accent, pady=8)
-        header_lbl.pack(fill=tk.X)
+        head = tk.Frame(win, bg=self.c_card)
+        head.pack(fill=tk.X)
+        head_row = tk.Frame(head, bg=self.c_card)
+        head_row.pack(fill=tk.X, padx=14, pady=(10, 4))
+        tk.Label(
+            head_row, image=self._ico("list-checks", size=16, color=self.c_text, bg=self.c_card),
+            bg=self.c_card,
+        ).pack(side=tk.LEFT, padx=(0, 8))
+        header_lbl = tk.Label(
+            head_row, text=self._t("full_header", date=date_str, done=completed_count),
+            font=(f_fam, 10, "bold"), bg=self.c_card, fg=self.c_text, anchor="w",
+        )
+        header_lbl.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
-        sub_lbl = tk.Label(win, text=self._t("full_sub", limit=limit),
-                           font=(f_fam, 8), bg=self.c_card, fg=self.c_sub, pady=3)
-        sub_lbl.pack(fill=tk.X)
+        sub_lbl = tk.Label(
+            head, text=self._t("full_sub", limit=limit),
+            font=(f_fam, 8), bg=self.c_card, fg=self.c_sub, anchor="w",
+        )
+        sub_lbl.pack(fill=tk.X, padx=14, pady=(0, 9))
+        tk.Frame(win, bg=self.c_border, height=1).pack(fill=tk.X)
 
         canvas = tk.Canvas(win, bg=self.c_bg, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(win, orient="vertical", command=canvas.yview)
+        scrollbar = ttk.Scrollbar(
+            win, orient="vertical", command=canvas.yview,
+            style="Minimal.Vertical.TScrollbar",
+        )
         scroll_frame = tk.Frame(canvas, bg=self.c_bg)
 
         scroll_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
-        canvas.create_window((0, 0), window=scroll_frame, anchor="nw", width=520)
+        scroll_cwin = canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+        canvas.bind("<Configure>", lambda e: canvas.itemconfig(scroll_cwin, width=e.width))
         canvas.configure(yscrollcommand=scrollbar.set)
 
         canvas.pack(side="left", fill="both", expand=True, padx=(10, 0), pady=10)
@@ -759,7 +1090,7 @@ class FloatingAssistantWidget:
                 is_pinned = pid in self.custom_habit_ids
                 pw.config(
                     text=self._t("pin_fixed") if is_pinned else self._t("pin_default"),
-                    fg=self.c_gold if is_pinned else self.c_sub,
+                    fg=self.c_text if is_pinned else self.c_muted,
                 )
 
         def toggle_pin_habit(target_hid):
@@ -769,7 +1100,7 @@ class FloatingAssistantWidget:
                     self.custom_habit_ids.remove(target_hid)
                     sub_lbl.config(text=self._t("pin_removed", hid=target_hid, cur=len(self.custom_habit_ids), limit=cur_limit), fg=self.c_sub)
                 else:
-                    sub_lbl.config(text=self._t("pin_min_warn"), fg=self.c_gold)
+                    sub_lbl.config(text=self._t("pin_min_warn"), fg=self.c_warn_fg)
             else:
                 while len(self.custom_habit_ids) >= cur_limit:
                     self.custom_habit_ids.pop()
@@ -779,6 +1110,9 @@ class FloatingAssistantWidget:
             self._populate_quick_habits()
             refresh_pin_styles()
 
+        ico_done_chk = self._ico("check", size=12, color="#FFFFFF", bg=self.c_green_btn)
+        ico_todo_chk = self._ico("square", size=12, color=self.c_muted, bg=self.c_surface_alt)
+
         for h in self.engine.habits:
             hid = h["id"]
             is_done = checks.get(hid, {}).get("status", 0) == 1
@@ -786,29 +1120,39 @@ class FloatingAssistantWidget:
             row = tk.Frame(scroll_frame, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
             row.pack(fill=tk.X, padx=4, pady=3)
 
-            btn_chk = tk.Button(row, text=self._t("chk_done") if is_done else self._t("chk_todo"), font=(f_fam, 8, "bold"),
-                                bg=self.c_green if is_done else "#475569", fg="#FFFFFF", relief=tk.FLAT, padx=6, pady=3,
-                                cursor="hand2")
-            btn_chk.pack(side=tk.LEFT, padx=6, pady=4)
+            btn_chk = tk.Button(
+                row,
+                image=ico_done_chk if is_done else ico_todo_chk,
+                compound=tk.LEFT,
+                text=f" {self._t('chk_done') if is_done else self._t('chk_todo')}",
+                font=(f_fam, 8, "bold"),
+                bg=self.c_green_btn if is_done else self.c_surface_alt,
+                fg="#FFFFFF" if is_done else self.c_sub,
+                activebackground=self.c_green if is_done else self.c_border,
+                activeforeground="#FFFFFF",
+                relief=tk.FLAT, bd=0, padx=7, pady=3, cursor="hand2",
+            )
+            btn_chk.pack(side=tk.LEFT, padx=6, pady=5)
+
+            is_pinned = hid in self.custom_habit_ids
+            btn_pin = tk.Label(row, text=self._t("pin_fixed") if is_pinned else self._t("pin_default"), font=(f_fam, 8, "bold"),
+                               bg=self.c_card, fg=self.c_text if is_pinned else self.c_muted, cursor="hand2", padx=4)
+            btn_pin.pack(side=tk.RIGHT, padx=(4, 10))
+            btn_pin.bind("<Button-1>", lambda e, th=hid: toggle_pin_habit(th))
+            pin_widgets[hid] = btn_pin
 
             info_box = tk.Frame(row, bg=self.c_card)
             info_box.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=4, pady=4)
 
             lbl_title = tk.Label(info_box, text=f"No.{hid} [{h['category']}] {h['name']}", font=(f_fam, 9, "bold"),
-                                 bg=self.c_card, fg=self.c_text if not is_done else self.c_sub, anchor="w", cursor="hand2")
+                                 bg=self.c_card, fg=self.c_text if not is_done else self.c_muted,
+                                 anchor="w", justify=tk.LEFT, wraplength=330, cursor="hand2")
             lbl_title.pack(fill=tk.X)
 
             kw_preview = ", ".join(h.get("keywords", [])[:5])
             lbl_kw = tk.Label(info_box, text=self._t("kw_preview_label", kws=kw_preview), font=(f_fam, 7),
-                              bg=self.c_card, fg=self.c_sub, anchor="w")
+                              bg=self.c_card, fg=self.c_sub, anchor="w", justify=tk.LEFT, wraplength=330)
             lbl_kw.pack(fill=tk.X)
-
-            is_pinned = hid in self.custom_habit_ids
-            btn_pin = tk.Label(row, text=self._t("pin_fixed") if is_pinned else self._t("pin_default"), font=(f_fam, 8, "bold"),
-                               bg=self.c_card, fg=self.c_gold if is_pinned else self.c_sub, cursor="hand2", padx=4)
-            btn_pin.pack(side=tk.RIGHT, padx=8)
-            btn_pin.bind("<Button-1>", lambda e, th=hid: toggle_pin_habit(th))
-            pin_widgets[hid] = btn_pin
 
             def make_handler(target_hid, b_widget, l_widget):
                 def _do_toggle():
@@ -816,10 +1160,12 @@ class FloatingAssistantWidget:
                     now_checks = self.db.get_checks_for_date(self.current_date.isoformat())
                     now_done = now_checks.get(target_hid, {}).get("status", 0) == 1
                     b_widget.config(
-                        text=self._t("chk_done") if now_done else self._t("chk_todo"),
-                        bg=self.c_green if now_done else "#475569",
+                        image=ico_done_chk if now_done else ico_todo_chk,
+                        text=f" {self._t('chk_done') if now_done else self._t('chk_todo')}",
+                        bg=self.c_green_btn if now_done else self.c_surface_alt,
+                        fg="#FFFFFF" if now_done else self.c_sub,
                     )
-                    l_widget.config(fg=self.c_sub if now_done else self.c_text)
+                    l_widget.config(fg=self.c_muted if now_done else self.c_text)
                     c_cnt = sum(1 for x in range(1, 36) if now_checks.get(x, {}).get("status", 0) == 1)
                     header_lbl.config(text=self._t("full_header", date=self.current_date.isoformat(), done=c_cnt))
                 return _do_toggle
@@ -838,28 +1184,22 @@ class FloatingAssistantWidget:
         f_fam = self._font()
         win = tk.Toplevel(self.root)
         self._keyword_help_win = win
+        apply_tk_app_icon(win, cache_owner=self)
         win.title(self._t("kw_win_title"))
         win.geometry("500x580")
         win.configure(bg=self.c_bg)
         win.attributes("-topmost", True)
 
-        tk.Label(win, text=self._t("kw_header"), font=(f_fam, 10, "bold"),
-                 bg=self.c_card, fg=self.c_accent, pady=8).pack(fill=tk.X)
+        self._make_dialog_header(win, "keyboard", self._t("kw_header"), subtitle=self._t("kw_tip"))
 
-        tk.Label(
-            win, text=self._t("kw_tip"),
-            font=(f_fam, 8), bg=self.c_card, fg=self.c_sub, justify=tk.LEFT, wraplength=475, pady=5, padx=10,
-        ).pack(fill=tk.X)
-
-        search_bar = tk.Frame(win, bg=self.c_bg, padx=10, pady=6)
+        search_bar = tk.Frame(win, bg=self.c_bg, padx=12, pady=8)
         search_bar.pack(fill=tk.X)
-        tk.Label(search_bar, text=self._t("kw_search_lbl"), font=(f_fam, 8, "bold"), bg=self.c_bg, fg=self.c_text).pack(side=tk.LEFT)
-        entry_filter = tk.Entry(search_bar, font=(f_fam, 9), bg=self.c_card, fg=self.c_text,
-                                insertbackground=self.c_text, relief=tk.FLAT, highlightbackground=self.c_border, highlightthickness=1)
-        entry_filter.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(6, 0), ipady=2)
+        tk.Label(search_bar, text=self._t("kw_search_lbl"), font=(f_fam, 8, "bold"), bg=self.c_bg, fg=self.c_sub).pack(side=tk.LEFT)
+        entry_filter = self._make_dark_entry(search_bar, font_size=9)
+        entry_filter.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(8, 0), ipady=3)
 
         canvas = tk.Canvas(win, bg=self.c_bg, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(win, orient="vertical", command=canvas.yview)
+        scrollbar = ttk.Scrollbar(win, orient="vertical", command=canvas.yview, style="Minimal.Vertical.TScrollbar")
         list_frame = tk.Frame(canvas, bg=self.c_bg)
 
         list_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
@@ -895,14 +1235,16 @@ class FloatingAssistantWidget:
                 if q and q not in haystack:
                     continue
                 row = tk.Frame(list_frame, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1, cursor="hand2")
-                row.pack(fill=tk.X, padx=4, pady=2)
+                row.pack(fill=tk.X, padx=4, pady=3)
 
                 t_lbl = tk.Label(row, text=f"No.{h['id']} [{h['category']}] {h['name']}", font=(f_fam, 8, "bold"),
-                                 bg=self.c_card, fg=self.c_text, anchor="w", padx=8, pady=2, cursor="hand2")
+                                 bg=self.c_card, fg=self.c_text, anchor="w", justify=tk.LEFT, wraplength=430,
+                                 padx=9, pady=3, cursor="hand2")
                 t_lbl.pack(fill=tk.X)
 
-                k_lbl = tk.Label(row, text=f"🔑 {', '.join(kws)}", font=(f_fam, 8),
-                                 bg=self.c_card, fg=self.c_gold, anchor="w", padx=8, pady=2, cursor="hand2")
+                k_lbl = tk.Label(row, text=", ".join(kws), font=(f_fam, 8),
+                                 bg=self.c_card, fg=self.c_sub, anchor="w", justify=tk.LEFT, wraplength=430,
+                                 padx=9, pady=3, cursor="hand2")
                 k_lbl.pack(fill=tk.X)
 
                 first_kw = kws[0] if kws else h["name"]
@@ -916,8 +1258,9 @@ class FloatingAssistantWidget:
     def update_persona_header(self):
         try:
             persona = self.engine.get_current_persona()
-            self.lbl_icon.config(text=persona["emoji"])
-            self.lbl_title.config(text=f" Life OS [{persona['name']}]")
+            self.lbl_title.config(text="Life OS")
+            if hasattr(self, "lbl_persona"):
+                self.lbl_persona.config(text=f"· {persona['name']}")
         except Exception:
             pass
 
@@ -931,89 +1274,101 @@ class FloatingAssistantWidget:
         personas = get_personas(lang)
 
         win = tk.Toplevel(self.root)
+        apply_tk_app_icon(win, cache_owner=self)
         win.title(self._t("set_win_title", app_name=app_name))
-        dlg_h = min(715, self.root.winfo_screenheight() - 50)
-        win.geometry(f"460x{dlg_h}")
+        dlg_h = min(730, self.root.winfo_screenheight() - 50)
+        win.geometry(f"468x{dlg_h}")
         win.configure(bg=self.c_bg)
         win.attributes("-topmost", True)
 
-        tk.Label(win, text=self._t("set_header", app_name=app_name), font=(f_fam, 11, "bold"),
-                 bg=self.c_card, fg=self.c_accent, pady=8).pack(fill=tk.X)
+        self._make_dialog_header(win, "settings", self._t("set_header", app_name=app_name))
 
-        content = tk.Frame(win, bg=self.c_bg, padx=15, pady=8)
+        content = tk.Frame(win, bg=self.c_bg, padx=14, pady=10)
         content.pack(fill=tk.BOTH, expand=True)
 
-        hk_box = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_accent, highlightthickness=1)
+        hk_box = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
         hk_box.pack(fill=tk.X, pady=(0, 8), padx=2)
-        tk.Label(hk_box, text=self._t("set_hotkey_lbl"), font=(f_fam, 9, "bold"),
-                 bg=self.c_card, fg=self.c_accent).pack(side=tk.LEFT, padx=8, pady=4)
-        tk.Label(hk_box, text=self._t("set_hotkey_desc"), font=(f_fam, 8),
-                 bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT, padx=2, pady=4)
+        tk.Label(
+            hk_box, image=self._ico("keyboard", size=13, color=self.c_sub, bg=self.c_card),
+            bg=self.c_card,
+        ).pack(side=tk.LEFT, padx=(9, 6), pady=6)
+        tk.Label(
+            hk_box, text=self._t("set_hotkey_lbl"), font=(f_fam, 9, "bold"),
+            bg=self.c_card, fg=self.c_text,
+        ).pack(side=tk.LEFT, pady=6)
+        tk.Label(
+            hk_box, text=self._t("set_hotkey_desc"), font=(f_fam, 8),
+            bg=self.c_card, fg=self.c_sub,
+        ).pack(side=tk.LEFT, padx=6, pady=6)
 
         # Language Selector Box (Default: Auto-detect OS language)
-        l_frame = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_green, highlightthickness=1)
-        l_frame.pack(fill=tk.X, pady=(0, 8), padx=2, ipady=3)
-        tk.Label(l_frame, text=self._t("set_lang_lbl"), font=(f_fam, 9, "bold"),
-                 bg=self.c_card, fg=self.c_green).pack(anchor="w", padx=8, pady=(4, 2))
+        l_frame = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
+        l_frame.pack(fill=tk.X, pady=(0, 8), padx=2, ipady=4)
+        self._make_card_section_label(l_frame, "globe", self._t("set_lang_lbl"))
 
         lang_options = get_language_options(lang)
         curr_lang_setting = self.db.get_setting("language", "auto")
         curr_lang_disp = next((lbl for code, lbl in lang_options if code == curr_lang_setting), lang_options[0][1])
 
-        cmb_language = ttk.Combobox(l_frame, values=[lbl for _, lbl in lang_options], state="readonly", font=(f_fam, 9))
+        cmb_language = ttk.Combobox(
+            l_frame, values=[lbl for _, lbl in lang_options],
+            state="readonly", font=(f_fam, 9), style="Minimal.TCombobox",
+        )
         cmb_language.set(curr_lang_disp)
-        cmb_language.pack(fill=tk.X, padx=8, pady=(0, 4))
+        cmb_language.pack(fill=tk.X, padx=10, pady=(2, 4))
 
         # Persona Selector Box
         p_frame = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
-        p_frame.pack(fill=tk.X, pady=(0, 8), padx=2, ipady=3)
-        tk.Label(p_frame, text=self._t("set_persona_lbl"), font=(f_fam, 9, "bold"),
-                 bg=self.c_card, fg=self.c_gold).pack(anchor="w", padx=8, pady=(4, 2))
+        p_frame.pack(fill=tk.X, pady=(0, 8), padx=2, ipady=4)
+        self._make_card_section_label(p_frame, "bot", self._t("set_persona_lbl"))
 
         persona_keys = ("huberman", "buffett", "musk_grok", "aurelius")
         persona_options = [(personas[k]["title"], k) for k in persona_keys]
         curr_p_key = self.db.get_setting("persona", "huberman")
         curr_disp = next((t[0] for t in persona_options if t[1] == curr_p_key), persona_options[0][0])
 
-        cmb_persona = ttk.Combobox(p_frame, values=[t[0] for t in persona_options], state="readonly", font=(f_fam, 9))
+        cmb_persona = ttk.Combobox(
+            p_frame, values=[t[0] for t in persona_options],
+            state="readonly", font=(f_fam, 9), style="Minimal.TCombobox",
+        )
         cmb_persona.set(curr_disp)
-        cmb_persona.pack(fill=tk.X, padx=8, pady=(0, 4))
+        cmb_persona.pack(fill=tk.X, padx=10, pady=(2, 4))
 
         # Checkboxes
         var_autostart = tk.BooleanVar(value=WindowsAutostartManager.is_autostart_enabled())
         tk.Checkbutton(content, text=self._t("set_chk_autostart"), variable=var_autostart,
-                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_card,
+                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_surface_alt,
                        activebackground=self.c_bg, activeforeground=self.c_text).pack(anchor="w", pady=2)
 
         var_tray = tk.BooleanVar(value=self.db.get_setting("close_to_tray") == "true")
         tk.Checkbutton(content, text=self._t("set_chk_tray"), variable=var_tray,
-                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_card,
+                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_surface_alt,
                        activebackground=self.c_bg, activeforeground=self.c_text).pack(anchor="w", pady=2)
 
         var_top = tk.BooleanVar(value=self.db.get_setting("always_on_top") == "true")
         tk.Checkbutton(content, text=self._t("set_chk_top"), variable=var_top,
-                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_card,
+                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_surface_alt,
                        activebackground=self.c_bg, activeforeground=self.c_text).pack(anchor="w", pady=2)
 
         var_sound = tk.BooleanVar(value=self.db.get_setting("sound_enabled", "true") == "true")
         tk.Checkbutton(content, text=self._t("set_chk_sound"), variable=var_sound,
-                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_card,
+                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_surface_alt,
                        activebackground=self.c_bg, activeforeground=self.c_text).pack(anchor="w", pady=2)
 
         var_toast = tk.BooleanVar(value=self.db.get_setting("toast_enabled", "true") == "true")
         tk.Checkbutton(content, text=self._t("set_chk_toast"), variable=var_toast,
-                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_card,
+                       font=(f_fam, 9), bg=self.c_bg, fg=self.c_text, selectcolor=self.c_surface_alt,
                        activebackground=self.c_bg, activeforeground=self.c_text).pack(anchor="w", pady=2)
 
         interval_frame = tk.Frame(content, bg=self.c_bg)
-        interval_frame.pack(fill=tk.X, pady=3)
+        interval_frame.pack(fill=tk.X, pady=4)
         tk.Label(interval_frame, text=self._t("set_interval_lbl"), font=(f_fam, 9), bg=self.c_bg, fg=self.c_text).pack(side=tk.LEFT)
-        entry_interval = tk.Entry(interval_frame, width=6, font=(f_fam, 9))
+        entry_interval = self._make_dark_entry(interval_frame, width=6, font_size=9)
         entry_interval.insert(0, self.db.get_setting("nudge_interval_minutes", "45"))
-        entry_interval.pack(side=tk.LEFT, padx=8)
+        entry_interval.pack(side=tk.LEFT, padx=8, ipady=2)
 
         opacity_frame = tk.Frame(content, bg=self.c_bg)
-        opacity_frame.pack(fill=tk.X, pady=3)
+        opacity_frame.pack(fill=tk.X, pady=4)
         tk.Label(opacity_frame, text=self._t("set_opacity_lbl"), font=(f_fam, 9), bg=self.c_bg, fg=self.c_text).pack(side=tk.LEFT)
 
         try:
@@ -1025,7 +1380,7 @@ class FloatingAssistantWidget:
         var_opacity_pct = tk.IntVar(value=init_pct)
         lbl_opacity_val = tk.Label(
             opacity_frame, text=f"{init_pct}%", width=5,
-            font=(f_fam, 9, "bold"), bg=self.c_bg, fg=self.c_accent, anchor="e",
+            font=(f_fam, 9, "bold"), bg=self.c_bg, fg=self.c_text, anchor="e",
         )
 
         def on_opacity_slide(val_str):
@@ -1047,27 +1402,27 @@ class FloatingAssistantWidget:
             variable=var_opacity_pct,
             command=on_opacity_slide,
             showvalue=False,
-            bg=self.c_bg, fg=self.c_text,
-            troughcolor=self.c_card, activebackground=self.c_accent,
-            highlightthickness=0, sliderrelief=tk.FLAT,
+            bg=self.c_border_strong, fg=self.c_text,
+            troughcolor=self.c_card, activebackground=self.c_cta_bg,
+            highlightbackground=self.c_border, highlightthickness=1,
+            sliderrelief=tk.FLAT, sliderlength=16, width=10,
         )
         scale_opacity.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(8, 6))
         lbl_opacity_val.pack(side=tk.RIGHT)
 
-        adv_frame = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_accent, highlightthickness=1)
+        adv_frame = tk.Frame(content, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
         adv_frame.pack(fill=tk.X, pady=(6, 6), padx=2, ipady=4)
 
-        tk.Label(adv_frame, text=self._t("set_adv_header"), font=(f_fam, 9, "bold"),
-                 bg=self.c_card, fg=self.c_accent).pack(anchor="w", padx=8, pady=(5, 2))
+        self._make_card_section_label(adv_frame, "sliders-horizontal", self._t("set_adv_header"))
 
         var_view_mode = tk.StringVar(value=self._get_quick_view_mode())
         limit_row = tk.Frame(adv_frame, bg=self.c_card)
 
         tk.Label(limit_row, text=self._t("set_adv_limit_lbl"), font=(f_fam, 8),
-                 bg=self.c_card, fg=self.c_text).pack(side=tk.LEFT)
-        entry_quick_limit = tk.Entry(limit_row, width=5, font=(f_fam, 9))
+                 bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
+        entry_quick_limit = self._make_dark_entry(limit_row, width=5, font_size=9)
         entry_quick_limit.insert(0, str(self._get_quick_habit_limit()))
-        entry_quick_limit.pack(side=tk.LEFT, padx=8)
+        entry_quick_limit.pack(side=tk.LEFT, padx=8, ipady=2)
 
         def sync_limit_state():
             entry_quick_limit.config(state=tk.NORMAL if var_view_mode.get() == "custom" else tk.DISABLED)
@@ -1076,15 +1431,15 @@ class FloatingAssistantWidget:
             adv_frame, text=self._t("set_adv_custom"),
             variable=var_view_mode, value="custom", command=sync_limit_state,
             font=(f_fam, 8), bg=self.c_card, fg=self.c_text,
-            selectcolor=self.c_bg, activebackground=self.c_card, activeforeground=self.c_text,
-        ).pack(anchor="w", padx=8, pady=1)
+            selectcolor=self.c_surface_alt, activebackground=self.c_card, activeforeground=self.c_text,
+        ).pack(anchor="w", padx=10, pady=1)
 
         tk.Radiobutton(
             adv_frame, text=self._t("set_adv_all"),
             variable=var_view_mode, value="all_scroll", command=sync_limit_state,
             font=(f_fam, 8), bg=self.c_card, fg=self.c_text,
-            selectcolor=self.c_bg, activebackground=self.c_card, activeforeground=self.c_text,
-        ).pack(anchor="w", padx=8, pady=1)
+            selectcolor=self.c_surface_alt, activebackground=self.c_card, activeforeground=self.c_text,
+        ).pack(anchor="w", padx=10, pady=1)
 
         limit_row.pack(fill=tk.X, padx=16, pady=(4, 4))
         sync_limit_state()
@@ -1161,18 +1516,34 @@ class FloatingAssistantWidget:
         btn_bar = tk.Frame(content, bg=self.c_bg)
         btn_bar.pack(fill=tk.X, pady=8)
 
-        tk.Button(btn_bar, text=self._t("set_btn_bot"), font=(f_fam, 9, "bold"),
-                  bg=self.c_card, fg=self.c_gold, relief=tk.FLAT, padx=10, pady=5, cursor="hand2",
-                  command=self.open_bot_settings_dialog).pack(side=tk.LEFT)
+        btn_bot = tk.Button(
+            btn_bar,
+            image=self._ico("webhook", size=13, color=self.c_sub, bg=self.c_card),
+            compound=tk.LEFT, text=f" {self._t('set_btn_bot')}",
+            font=(f_fam, 9),
+            bg=self.c_card, fg=self.c_sub,
+            activebackground=self.c_surface_alt, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=10, pady=5, cursor="hand2",
+            command=self.open_bot_settings_dialog,
+        )
+        btn_bot.pack(side=tk.LEFT)
+        self._bind_hover(btn_bot, self.c_card, self.c_surface_alt, self.c_sub, self.c_text)
 
-        tk.Button(btn_bar, text=self._t("set_btn_save"), font=(f_fam, 9, "bold"),
-                  bg=self.c_accent, fg="#0F172A", relief=tk.FLAT, padx=14, pady=5, cursor="hand2",
-                  command=save_settings).pack(side=tk.RIGHT)
+        btn_save = tk.Button(
+            btn_bar, text=self._t("set_btn_save"), font=(f_fam, 9, "bold"),
+            bg=self.c_cta_bg, fg=self.c_cta_fg,
+            activebackground="#FFFFFF", activeforeground=self.c_cta_fg,
+            relief=tk.FLAT, bd=0, padx=16, pady=5, cursor="hand2",
+            command=save_settings,
+        )
+        btn_save.pack(side=tk.RIGHT)
+        self._bind_hover(btn_save, self.c_cta_bg, "#FFFFFF")
 
         win._save_settings = save_settings
         return win
 
-    # --- Mobile Bot & LLM API Integration Settings ---
+    # --- Mobile Bot & Webhook Bridge Settings ---
     def open_bot_settings_dialog(self):
         import threading
         import webbrowser
@@ -1185,24 +1556,27 @@ class FloatingAssistantWidget:
         f_fam = self._font()
         win = tk.Toplevel(self.root)
         self._bot_settings_win = win
+        apply_tk_app_icon(win, cache_owner=self)
         win.title(self._t("bot_win_title"))
         dlg_h = min(740, self.root.winfo_screenheight() - 50)
-        win.geometry(f"535x{dlg_h}")
+        win.geometry(f"565x{dlg_h}")
         win.configure(bg=self.c_bg)
         win.attributes("-topmost", True)
 
-        tk.Label(win, text=self._t("bot_header"), font=(f_fam, 10, "bold"), bg=self.c_card, fg=self.c_accent, pady=8).pack(fill=tk.X)
-        tk.Label(win, text=self._t("bot_path_guide"), font=(f_fam, 7), bg=self.c_card, fg=self.c_sub, pady=3).pack(fill=tk.X)
+        self._make_dialog_header(win, "webhook", self._t("bot_header"), subtitle=self._t("bot_path_guide"))
 
         # Save button placeholder packed at BOTTOM before scrollable middle frame so it is never clipped
         footer_bar = tk.Frame(win, bg=self.c_bg)
-        footer_bar.pack(side=tk.BOTTOM, fill=tk.X, pady=6)
+        footer_bar.pack(side=tk.BOTTOM, fill=tk.X, pady=(4, 10))
 
         scroll_wrap = tk.Frame(win, bg=self.c_bg)
-        scroll_wrap.pack(fill=tk.BOTH, expand=True, padx=(10, 4), pady=4)
+        scroll_wrap.pack(fill=tk.BOTH, expand=True, padx=(10, 4), pady=6)
 
         canvas = tk.Canvas(scroll_wrap, bg=self.c_bg, highlightthickness=0)
-        scrollbar = ttk.Scrollbar(scroll_wrap, orient="vertical", command=canvas.yview)
+        scrollbar = ttk.Scrollbar(
+            scroll_wrap, orient="vertical", command=canvas.yview,
+            style="Minimal.Vertical.TScrollbar",
+        )
         body = tk.Frame(canvas, bg=self.c_bg, padx=6, pady=4)
 
         body.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
@@ -1241,7 +1615,7 @@ class FloatingAssistantWidget:
         st_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
         st_card.pack(fill=tk.X, pady=(0, 8))
         lbl_live = tk.Label(st_card, text=self._t("bot_status_loading"), font=(f_fam, 8), bg=self.c_card, fg=self.c_sub,
-                            justify=tk.LEFT, anchor="w", padx=8, pady=5)
+                            justify=tk.LEFT, anchor="w", padx=10, pady=6)
         lbl_live.pack(fill=tk.X)
 
         def refresh_status_label():
@@ -1261,46 +1635,60 @@ class FloatingAssistantWidget:
 
         refresh_status_label()
 
+        ico_ext = self._ico("external-link", size=11, color=self.c_text, bg=self.c_surface_alt)
+
         # 1. Telegram Bot Settings (+ Anti-Impersonation Security Warning)
-        tg_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_green, highlightthickness=1)
+        tg_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
         tg_card.pack(fill=tk.X, pady=(0, 8), ipady=4)
 
         tg_head = tk.Frame(tg_card, bg=self.c_card)
-        tg_head.pack(fill=tk.X, padx=8, pady=(4, 2))
+        tg_head.pack(fill=tk.X, padx=8, pady=(6, 4))
+
+        btn_tg_portal = tk.Button(
+            tg_head, image=ico_ext, compound=tk.RIGHT,
+            text=f"{self._t('bot_tg_btn_botfather')} ", font=(f_fam, 7, "bold"),
+            bg=self.c_surface_alt, fg=self.c_text,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=8, pady=3, cursor="hand2",
+            command=lambda: webbrowser.open("https://t.me/BotFather"),
+        )
+        btn_tg_portal.pack(side=tk.RIGHT)
+        self._bind_hover(btn_tg_portal, self.c_surface_alt, self.c_border)
 
         var_tg_on = tk.BooleanVar(value=self.db.get_setting("telegram_enabled", "false") == "true")
         tk.Checkbutton(
             tg_head, text=self._t("bot_tg_chk"),
             variable=var_tg_on, font=(f_fam, 9, "bold"),
-            bg=self.c_card, fg=self.c_text, selectcolor=self.c_bg,
+            bg=self.c_card, fg=self.c_text, selectcolor=self.c_surface_alt,
             activebackground=self.c_card, activeforeground=self.c_text,
         ).pack(side=tk.LEFT)
 
-        tk.Button(
-            tg_head, text=self._t("bot_tg_btn_botfather"), font=(f_fam, 7, "bold"),
-            bg="#1D4ED8", fg="#FFFFFF", relief=tk.FLAT, padx=6, pady=2, cursor="hand2",
-            command=lambda: webbrowser.open("https://t.me/BotFather"),
-        ).pack(side=tk.RIGHT)
-
-        warn_box = tk.Frame(tg_card, bg="#451A03", highlightbackground=self.c_gold, highlightthickness=1)
-        warn_box.pack(fill=tk.X, padx=10, pady=(2, 4))
+        warn_box = tk.Frame(tg_card, bg=self.c_warn_bg, highlightbackground=self.c_warn_border, highlightthickness=1)
+        warn_box.pack(fill=tk.X, padx=10, pady=(2, 6))
+        warn_inner = tk.Frame(warn_box, bg=self.c_warn_bg)
+        warn_inner.pack(fill=tk.X, padx=8, pady=5)
         tk.Label(
-            warn_box, text=self._t("bot_tg_warn"),
-            font=(f_fam, 7, "bold"), bg="#451A03", fg="#FDE68A",
-            justify=tk.LEFT, anchor="w", wraplength=455, padx=6, pady=4,
-        ).pack(fill=tk.X)
+            warn_inner, image=self._ico("info", size=13, color=self.c_warn_fg, bg=self.c_warn_bg),
+            bg=self.c_warn_bg,
+        ).pack(side=tk.LEFT, anchor="n", padx=(0, 7), pady=(2, 0))
+        tk.Label(
+            warn_inner, text=self._t("bot_tg_warn"),
+            font=(f_fam, 7), bg=self.c_warn_bg, fg=self.c_text,
+            justify=tk.LEFT, anchor="w", wraplength=430,
+        ).pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         tk.Label(
             tg_card, text=self._t("bot_tg_steps"),
             font=(f_fam, 7), bg=self.c_card, fg=self.c_sub, justify=tk.LEFT, anchor="w", wraplength=465, padx=10,
-        ).pack(fill=tk.X, pady=(0, 4))
+        ).pack(fill=tk.X, pady=(0, 5))
 
         tg_row = tk.Frame(tg_card, bg=self.c_card)
-        tg_row.pack(fill=tk.X, padx=10, pady=2)
+        tg_row.pack(fill=tk.X, padx=10, pady=3)
         tk.Label(tg_row, text="Bot Token:", font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        entry_tg_tok = tk.Entry(tg_row, font=(f_fam, 8), show="*")
+        entry_tg_tok = self._make_dark_entry(tg_row, show="*", font_size=8)
         entry_tg_tok.insert(0, self.db.get_setting("telegram_token", "") or os.getenv("TELEGRAM_BOT_TOKEN", ""))
-        entry_tg_tok.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6)
+        entry_tg_tok.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6, ipady=2)
 
         def test_tg_token():
             from telegram_bot import TelegramBotRunner
@@ -1312,51 +1700,69 @@ class FloatingAssistantWidget:
                 lambda: TelegramBotRunner.verify_token(tok, lang=active_lang),
             )
 
-        btn_tg_test = tk.Button(tg_row, text=self._t("bot_tg_btn_test"), font=(f_fam, 7, "bold"),
-                                bg="#334155", fg=self.c_green, relief=tk.FLAT, padx=6, pady=2, cursor="hand2",
-                                command=test_tg_token)
+        btn_tg_test = tk.Button(
+            tg_row, text=self._t("bot_tg_btn_test"), font=(f_fam, 7, "bold"),
+            bg=self.c_surface_alt, fg=self.c_text,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=8, pady=3, cursor="hand2",
+            command=test_tg_token,
+        )
         btn_tg_test.pack(side=tk.RIGHT)
+        self._bind_hover(btn_tg_test, self.c_surface_alt, self.c_border)
 
         # 2. Discord Bot Settings (Built-in Gateway v10)
-        dc_card = tk.Frame(body, bg=self.c_card, highlightbackground="#818CF8", highlightthickness=1)
+        dc_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
         dc_card.pack(fill=tk.X, pady=(0, 8), ipady=4)
 
         dc_head = tk.Frame(dc_card, bg=self.c_card)
-        dc_head.pack(fill=tk.X, padx=8, pady=(4, 2))
+        dc_head.pack(fill=tk.X, padx=8, pady=(6, 4))
+
+        btn_dc_portal = tk.Button(
+            dc_head, image=ico_ext, compound=tk.RIGHT,
+            text=f"{self._t('bot_dc_btn_portal')} ", font=(f_fam, 7, "bold"),
+            bg=self.c_surface_alt, fg=self.c_text,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=8, pady=3, cursor="hand2",
+            command=lambda: webbrowser.open("https://discord.com/developers/applications"),
+        )
+        btn_dc_portal.pack(side=tk.RIGHT)
+        self._bind_hover(btn_dc_portal, self.c_surface_alt, self.c_border)
 
         var_dc_on = tk.BooleanVar(value=self.db.get_setting("discord_enabled", "false") == "true")
         tk.Checkbutton(
             dc_head, text=self._t("bot_dc_chk"),
             variable=var_dc_on, font=(f_fam, 9, "bold"),
-            bg=self.c_card, fg=self.c_text, selectcolor=self.c_bg,
+            bg=self.c_card, fg=self.c_text, selectcolor=self.c_surface_alt,
             activebackground=self.c_card, activeforeground=self.c_text,
         ).pack(side=tk.LEFT)
 
-        tk.Button(
-            dc_head, text=self._t("bot_dc_btn_portal"), font=(f_fam, 7, "bold"),
-            bg="#4F46E5", fg="#FFFFFF", relief=tk.FLAT, padx=6, pady=2, cursor="hand2",
-            command=lambda: webbrowser.open("https://discord.com/developers/applications"),
-        ).pack(side=tk.RIGHT)
-
-        dc_warn = tk.Frame(dc_card, bg="#1E1B4B", highlightbackground="#818CF8", highlightthickness=1)
-        dc_warn.pack(fill=tk.X, padx=10, pady=(2, 4))
+        dc_warn = tk.Frame(dc_card, bg=self.c_warn_bg, highlightbackground=self.c_warn_border, highlightthickness=1)
+        dc_warn.pack(fill=tk.X, padx=10, pady=(2, 6))
+        dc_warn_inner = tk.Frame(dc_warn, bg=self.c_warn_bg)
+        dc_warn_inner.pack(fill=tk.X, padx=8, pady=5)
         tk.Label(
-            dc_warn, text=self._t("bot_dc_warn"),
-            font=(f_fam, 7, "bold"), bg="#1E1B4B", fg="#C7D2FE",
-            justify=tk.LEFT, anchor="w", wraplength=455, padx=6, pady=4,
-        ).pack(fill=tk.X)
+            dc_warn_inner, image=self._ico("lock", size=13, color=self.c_warn_fg, bg=self.c_warn_bg),
+            bg=self.c_warn_bg,
+        ).pack(side=tk.LEFT, anchor="n", padx=(0, 7), pady=(2, 0))
+        tk.Label(
+            dc_warn_inner, text=self._t("bot_dc_warn"),
+            font=(f_fam, 7), bg=self.c_warn_bg, fg=self.c_text,
+            justify=tk.LEFT, anchor="w", wraplength=430,
+        ).pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         tk.Label(
             dc_card, text=self._t("bot_dc_steps"),
             font=(f_fam, 7), bg=self.c_card, fg=self.c_sub, justify=tk.LEFT, anchor="w", wraplength=465, padx=10,
-        ).pack(fill=tk.X, pady=(0, 4))
+        ).pack(fill=tk.X, pady=(0, 5))
 
         dc_row1 = tk.Frame(dc_card, bg=self.c_card)
-        dc_row1.pack(fill=tk.X, padx=10, pady=2)
+        dc_row1.pack(fill=tk.X, padx=10, pady=3)
         tk.Label(dc_row1, text="Bot Token:", font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        entry_dc_tok = tk.Entry(dc_row1, font=(f_fam, 8), show="*")
+        entry_dc_tok = self._make_dark_entry(dc_row1, show="*", font_size=8)
         entry_dc_tok.insert(0, self.db.get_setting("discord_token", "") or os.getenv("DISCORD_BOT_TOKEN", ""))
-        entry_dc_tok.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6)
+        entry_dc_tok.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6, ipady=2)
 
         def test_dc_token():
             from discord_bot import DiscordBotRunner
@@ -1368,41 +1774,47 @@ class FloatingAssistantWidget:
                 lambda: DiscordBotRunner.verify_token(tok, lang=active_lang),
             )
 
-        btn_dc_test = tk.Button(dc_row1, text=self._t("bot_dc_btn_test"), font=(f_fam, 7, "bold"),
-                                bg="#334155", fg="#A5B4FC", relief=tk.FLAT, padx=6, pady=2, cursor="hand2",
-                                command=test_dc_token)
+        btn_dc_test = tk.Button(
+            dc_row1, text=self._t("bot_dc_btn_test"), font=(f_fam, 7, "bold"),
+            bg=self.c_surface_alt, fg=self.c_text,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=8, pady=3, cursor="hand2",
+            command=test_dc_token,
+        )
         btn_dc_test.pack(side=tk.RIGHT)
+        self._bind_hover(btn_dc_test, self.c_surface_alt, self.c_border)
 
         dc_row2 = tk.Frame(dc_card, bg=self.c_card)
-        dc_row2.pack(fill=tk.X, padx=10, pady=2)
+        dc_row2.pack(fill=tk.X, padx=10, pady=3)
         tk.Label(dc_row2, text=self._t("bot_dc_ch_lbl"), font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        entry_dc_chan = tk.Entry(dc_row2, font=(f_fam, 8))
+        entry_dc_chan = self._make_dark_entry(dc_row2, font_size=8)
         entry_dc_chan.insert(0, self.db.get_setting("discord_channel_id", "") or os.getenv("DISCORD_CHANNEL_ID", ""))
-        entry_dc_chan.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6)
+        entry_dc_chan.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6, ipady=2)
 
         # 3. Webhook Bridge Settings (Android HTTP Shortcuts · Wi-Fi iPhone)
-        wh_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_accent, highlightthickness=1)
+        wh_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
         wh_card.pack(fill=tk.X, pady=(0, 8), ipady=4)
 
         var_wh_on = tk.BooleanVar(value=self.db.get_setting("webhook_enabled", "false") == "true")
         tk.Checkbutton(
             wh_card, text=self._t("bot_wh_chk"),
             variable=var_wh_on, font=(f_fam, 9, "bold"),
-            bg=self.c_card, fg=self.c_text, selectcolor=self.c_bg,
+            bg=self.c_card, fg=self.c_text, selectcolor=self.c_surface_alt,
             activebackground=self.c_card, activeforeground=self.c_text,
-        ).pack(anchor="w", padx=8, pady=(4, 2))
+        ).pack(anchor="w", padx=8, pady=(6, 4))
 
         wh_row = tk.Frame(wh_card, bg=self.c_card)
-        wh_row.pack(fill=tk.X, padx=12, pady=2)
+        wh_row.pack(fill=tk.X, padx=12, pady=3)
         tk.Label(wh_row, text="Host:", font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        entry_host = tk.Entry(wh_row, width=14, font=(f_fam, 8))
+        entry_host = self._make_dark_entry(wh_row, width=14, font_size=8)
         entry_host.insert(0, self.db.get_setting("webhook_host", "127.0.0.1"))
-        entry_host.pack(side=tk.LEFT, padx=(4, 10))
+        entry_host.pack(side=tk.LEFT, padx=(4, 10), ipady=2)
 
         tk.Label(wh_row, text="Port:", font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        entry_port = tk.Entry(wh_row, width=6, font=(f_fam, 8))
+        entry_port = self._make_dark_entry(wh_row, width=6, font_size=8)
         entry_port.insert(0, self.db.get_setting("webhook_port", "8080"))
-        entry_port.pack(side=tk.LEFT, padx=4)
+        entry_port.pack(side=tk.LEFT, padx=4, ipady=2)
 
         def test_webhook_live():
             import requests as _req
@@ -1426,38 +1838,21 @@ class FloatingAssistantWidget:
 
             run_async_check(btn_wh_test, self._t("bot_wh_btn_test"), self._t("bot_wh_test_ok_title"), self._t("bot_wh_test_warn_title"), _do)
 
-        btn_wh_test = tk.Button(wh_row, text=self._t("bot_wh_btn_test"), font=(f_fam, 7, "bold"),
-                                bg="#334155", fg=self.c_accent, relief=tk.FLAT, padx=6, pady=2, cursor="hand2",
-                                command=test_webhook_live)
+        btn_wh_test = tk.Button(
+            wh_row, text=self._t("bot_wh_btn_test"), font=(f_fam, 7, "bold"),
+            bg=self.c_surface_alt, fg=self.c_text,
+            activebackground=self.c_border, activeforeground=self.c_text,
+            relief=tk.FLAT, bd=0, highlightbackground=self.c_border, highlightthickness=1,
+            padx=8, pady=3, cursor="hand2",
+            command=test_webhook_live,
+        )
         btn_wh_test.pack(side=tk.RIGHT)
+        self._bind_hover(btn_wh_test, self.c_surface_alt, self.c_border)
 
-        tk.Label(wh_card, text=self._t("bot_wh_tip"), font=(f_fam, 7), bg=self.c_card, fg=self.c_gold,
-                 justify=tk.LEFT, wraplength=465).pack(anchor="w", padx=10, pady=(2, 2))
+        tk.Label(wh_card, text=self._t("bot_wh_tip"), font=(f_fam, 7), bg=self.c_card, fg=self.c_sub,
+                 justify=tk.LEFT, wraplength=465).pack(anchor="w", padx=10, pady=(3, 4))
 
-        # 4. LLM API Mode Settings
-        llm_card = tk.Frame(body, bg=self.c_card, highlightbackground=self.c_border, highlightthickness=1)
-        llm_card.pack(fill=tk.X, pady=(0, 8), ipady=4)
-
-        win._bot_cards = {"telegram": tg_card, "discord": dc_card, "webhook": wh_card, "llm": llm_card}
-
-        tk.Label(llm_card, text=self._t("bot_llm_hdr"), font=(f_fam, 8, "bold"),
-                 bg=self.c_card, fg=self.c_gold).pack(anchor="w", padx=8, pady=(4, 2))
-
-        llm_row1 = tk.Frame(llm_card, bg=self.c_card)
-        llm_row1.pack(fill=tk.X, padx=10, pady=2)
-        tk.Label(llm_row1, text=self._t("bot_llm_provider"), font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        providers = ["mock", "grok", "openai", "gemini"]
-        cmb_prov = ttk.Combobox(llm_row1, values=providers, state="readonly", width=12, font=(f_fam, 8))
-        cur_prov = self.db.get_setting("llm_provider", "mock")
-        cmb_prov.set(cur_prov if cur_prov in providers else "mock")
-        cmb_prov.pack(side=tk.LEFT, padx=6)
-
-        llm_row2 = tk.Frame(llm_card, bg=self.c_card)
-        llm_row2.pack(fill=tk.X, padx=10, pady=2)
-        tk.Label(llm_row2, text="API Key:", font=(f_fam, 8), bg=self.c_card, fg=self.c_sub).pack(side=tk.LEFT)
-        entry_api_key = tk.Entry(llm_row2, font=(f_fam, 8), show="*")
-        entry_api_key.insert(0, self.db.get_setting("llm_api_key", ""))
-        entry_api_key.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=6)
+        win._bot_cards = {"telegram": tg_card, "discord": dc_card, "webhook": wh_card}
 
         _bind_scroll_recursive(body)
 
@@ -1476,8 +1871,6 @@ class FloatingAssistantWidget:
 
             self.db.set_setting("telegram_enabled", "true" if var_tg_on.get() else "false")
             self.db.set_setting("telegram_token", entry_tg_tok.get().strip())
-            self.db.set_setting("llm_provider", cmb_prov.get())
-            self.db.set_setting("llm_api_key", entry_api_key.get().strip())
 
             notes = []
             if self.on_bot_config_changed:
@@ -1487,9 +1880,15 @@ class FloatingAssistantWidget:
             summary = "\n".join(f"• {n}" for n in notes) if notes else self._t("bot_saved_default")
             messagebox.showinfo(self._t("bot_saved_title"), summary, parent=win)
 
-        tk.Button(footer_bar, text=self._t("bot_btn_apply"), font=(f_fam, 9, "bold"),
-                  bg=self.c_accent, fg="#0F172A", relief=tk.FLAT, padx=14, pady=6, cursor="hand2",
-                  command=save_bot_settings).pack()
+        btn_apply = tk.Button(
+            footer_bar, text=self._t("bot_btn_apply"), font=(f_fam, 9, "bold"),
+            bg=self.c_cta_bg, fg=self.c_cta_fg,
+            activebackground="#FFFFFF", activeforeground=self.c_cta_fg,
+            relief=tk.FLAT, bd=0, padx=18, pady=6, cursor="hand2",
+            command=save_bot_settings,
+        )
+        btn_apply.pack()
+        self._bind_hover(btn_apply, self.c_cta_bg, "#FFFFFF")
 
     # --- Window Minimize & Close ---
     def handle_close_button(self):

@@ -142,8 +142,6 @@ class DatabaseManager:
                 "toast_enabled": "true",
                 "persona": "huberman",
                 "language": "auto",
-                "llm_provider": "mock",
-                "llm_api_key": "",
                 "excel_path": "",
                 "auto_sync_excel": "true",
                 "quick_view_mode": "custom",

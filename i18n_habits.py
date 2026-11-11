@@ -7,7 +7,7 @@ Single source of truth for the 35 science- & mentor-backed habits across:
   - English (en)
   - Japanese (ja)
   - Simplified Chinese (zh)
-Used by NLP/LLM matching, SQLite seeding, Floating Widget UI, Bot Bridge,
+Used by local offline NLP matching, SQLite seeding, Floating Widget UI, Bot Bridge,
 Telegram Bot, and localized Excel workbook generation.
 =============================================================================
 """
@@ -374,7 +374,7 @@ RAW_HABITS = [
             "ko": ["햇빛", "햇볕", "자연광", "일조", "아침산책", "후버만", "눈부심"],
             "en": ["sunlight", "morning sun", "daylight", "outdoor light", "huberman", "morning walk"],
             "ja": ["日光", "朝日", "自然光", "朝散歩", "フーバーマン", "太陽"],
-            "zh": ["阳光", "晒太阳", "自然光", "晨走", "休伯曼", "日照"],
+            "zh": ["阳光", "晒太阳", "自然光", "晨走", "休伯曼", "日照", "晨光"],
         },
     },
     {
@@ -441,10 +441,10 @@ RAW_HABITS = [
         },
         "freq": {"ko": "매일(저녁)", "en": "Daily (PM)", "ja": "毎晩", "zh": "每晚"},
         "keywords": {
-            "ko": ["디지털디톡스", "스마트폰끄기", "화면끄기", "취침전", "블루라이트", "폰치우기"],
-            "en": ["digital detox", "screens off", "no phone before bed", "blue light", "screen off"],
-            "ja": ["デジタルデトックス", "スマホ見ない", "ブルーライト", "画面オフ", "寝る前スマホ"],
-            "zh": ["数字排毒", "关屏幕", "不用手机", "睡前远离手机", "防蓝光"],
+            "ko": ["디지털디톡스", "스마트폰끄기", "화면끄기", "취침전", "블루라이트", "폰치우기", "스마트폰멀리", "폰멀리"],
+            "en": ["digital detox", "screens off", "no phone before bed", "blue light", "screen off", "phone away", "no screens"],
+            "ja": ["デジタルデトックス", "スマホ見ない", "ブルーライト", "画面オフ", "寝る前スマホ", "デジタル断ち", "スマホ遠ざけ"],
+            "zh": ["数字排毒", "关屏幕", "不用手机", "睡前远离手机", "远离手机", "防蓝光"],
         },
     },
     {
@@ -583,7 +583,7 @@ RAW_HABITS = [
         "freq": {"ko": "매일", "en": "Daily", "ja": "毎日", "zh": "每日"},
         "keywords": {
             "ko": ["명상", "초월명상", "호흡명상", "달리오", "마인드풀니스", "20분명상"],
-            "en": ["meditation", "meditate", "mindfulness", "20m meditation", "breathwork"],
+            "en": ["meditation", "meditate", "meditated", "mindfulness", "20m meditation", "breathwork"],
             "ja": ["瞑想", "マインドフルネス", "超越瞑想", "呼吸瞑想"],
             "zh": ["冥想", "静坐", "正念", "呼吸冥想", "超越冥想"],
         },
@@ -759,7 +759,7 @@ RAW_HABITS = [
         "freq": {"ko": "매일", "en": "Daily", "ja": "毎日", "zh": "每日"},
         "keywords": {
             "ko": ["독서", "책읽기", "빌게이츠", "책", "정독", "독서1시간"],
-            "en": ["reading", "read a book", "read 1 hour", "bill gates", "read 30m"],
+            "en": ["reading", "read a book", "read 1 hour", "read for 1 hour", "read for 30", "bill gates", "read 30m"],
             "ja": ["読書", "本を読む", "ビルゲイツ", "精読", "1時間読書"],
             "zh": ["阅读", "读书", "看书", "精读", "比尔盖茨"],
         },

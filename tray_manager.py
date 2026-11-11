@@ -8,10 +8,11 @@
 
 import threading
 import sys
-from PIL import Image, ImageDraw
+from PIL import Image
 import pystray
 from pystray import MenuItem as item
 from i18n import tr, get_app_name, resolve_language
+from app_icon import load_app_icon_image
 
 # Set console encoding
 if sys.platform.startswith("win"):
@@ -22,24 +23,8 @@ if sys.platform.startswith("win"):
         pass
 
 def create_tray_icon_image():
-    """Dynamically generate a high-res modern app icon for Windows Tray"""
-    width = 64
-    height = 64
-    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Draw rounded gradient navy background
-    draw.ellipse((4, 4, 60, 60), fill="#0F172A", outline="#38BDF8", width=3)
-    # Inner glowing core
-    draw.ellipse((14, 14, 50, 50), fill="#1E293B", outline="#10B981", width=2)
-    # Robot / Star core mark
-    draw.rectangle((22, 26, 42, 38), fill="#38BDF8")
-    draw.ellipse((26, 29, 30, 33), fill="#0F172A")
-    draw.ellipse((34, 29, 38, 33), fill="#0F172A")
-    # Smile
-    draw.arc((26, 30, 38, 42), start=0, end=180, fill="#10B981", width=2)
-
-    return img
+    """Load the unified Growth Graph app icon for the Windows System Tray."""
+    return load_app_icon_image(size=64)
 
 class SystemTrayManager:
     def __init__(self, on_show=None, on_nudge=None, on_full_list=None, on_settings=None, on_sync=None, on_exit=None,

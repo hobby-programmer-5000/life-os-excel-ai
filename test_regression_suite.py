@@ -2,7 +2,7 @@
 =============================================================================
 🧪 ALL-IN-ONE LIFE OS : Comprehensive Regression & Integration Test Suite
 =============================================================================
-엑셀 수식, 파이썬 코어(NLP/LLM), SQLite 3-Way 양방향 동기화, 봇 웹훅/텔레그램,
+엑셀 수식, 파이썬 코어(오프라인 다국어 NLP), SQLite 3-Way 양방향 동기화, 봇 웹훅/텔레그램,
 Tkinter 플로팅 UI, 그리고 빌드된 실행 파일(.exe) 실제 구동까지 전방위 회귀 검증.
 
 모든 테스트는 격리된 임시 디렉토리에서 실행되므로 사용자의 실제 life_os.db 및
@@ -40,14 +40,16 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from generate_excel import build_life_os_workbook
-from ai_secretary import HABITS_CATALOG, LLMClient, LifeOSSecretary
+from ai_secretary import HABITS_CATALOG, LocalHabitNLP, LifeOSSecretary
 from database import DatabaseManager, resolve_base_dir
 from assistant_engine import AssistantEngine, PERSONAS, WindowsAutostartManager, HABIT_ALLOWED_HOURS, is_habit_suitable_for_hour
 from bot_bridge import BotBridgeServer
 from telegram_bot import TelegramBotRunner
 from discord_bot import DiscordBotRunner, _MinimalWebSocketClient
 from floating_widget import FloatingAssistantWidget
-from tray_manager import SystemTrayManager
+from tray_manager import SystemTrayManager, create_tray_icon_image
+from app_icon import get_app_icon_paths
+from ui_theme import THEME, get_lucide_dir, render_lucide_icon
 from i18n import detect_system_language, get_app_name, resolve_language, SHEET_TITLES, tr, format_date_nav_labels
 from i18n_habits import get_habits_catalog
 from i18n_personas import get_personas
@@ -109,58 +111,50 @@ class TestExcelRegression(unittest.TestCase):
             wb.close()
 
 
-class TestNLPLLMRegression(unittest.TestCase):
-    """2. 자연어 35대 키워드, 오체크 방지, Grok/OpenAI/Gemini 모킹 회귀 테스트"""
+class TestLocalNLPRegression(unittest.TestCase):
+    """2. 100% 오프라인 다국어 로컬 NLP 35대 키워드, 자연어 문장 입력, 오체크 방지 회귀 테스트"""
 
     def test_all_35_habits_every_keyword_matches(self):
-        llm = LLMClient(provider="mock", api_key=None, lang="ko")
+        nlp = LocalHabitNLP(lang="ko")
         for habit in get_habits_catalog("ko"):
             hid = habit["id"]
             for kw in habit["keywords"]:
-                matched, msg = llm.analyze_checkin(f"오늘 {kw} 실천 완료했습니다", lang="ko")
+                matched, msg = nlp.analyze_checkin(f"오늘 {kw} 실천 완료했습니다", lang="ko")
                 self.assertIn(hid, matched, f"Habit {hid} failed to match keyword '{kw}'")
                 self.assertTrue(bool(msg.strip()))
 
     def test_unrelated_text_never_triggers_false_positives(self):
-        llm = LLMClient(provider="mock", api_key=None, lang="ko")
+        nlp = LocalHabitNLP(lang="ko")
         for noise in ("dk", "asdfqwer", "ㅋㅋㅋ", "테스트", "오늘 날씨 좋네", "", "   "):
-            matched, coaching = llm.analyze_checkin(noise, lang="ko")
+            matched, coaching = nlp.analyze_checkin(noise, lang="ko")
             self.assertEqual(matched, [], f"Noise '{noise}' falsely matched {matched}")
             self.assertIn("찾지 못했습니다", coaching)
 
     def test_multi_habit_and_spacing_insensitivity(self):
-        llm = LLMClient(provider="mock", api_key=None)
-        matched, _ = llm.analyze_checkin("가장 중요한 일 정하고 찬물 샤워 후 Zone 2 달리기!")
+        nlp = LocalHabitNLP()
+        matched, _ = nlp.analyze_checkin("가장 중요한 일 정하고 찬물 샤워 후 Zone 2 달리기!")
         self.assertTrue({1, 7, 10}.issubset(set(matched)), f"Matched: {matched}")
 
-    def test_llm_api_providers_and_fallback(self):
-        # Test OpenAI/Grok JSON response + out-of-range filtering
-        mock_resp = MagicMock()
-        mock_resp.status_code = 200
-        mock_resp.json.return_value = {
-            "choices": [{"message": {"content": json.dumps({"matched_habit_ids": [2, 999, "bad", 2], "coaching_message": "Good work!"})}}]
-        }
-        with patch("requests.post", return_value=mock_resp):
-            ids, msg = LLMClient(provider="grok", api_key="test-key").analyze_checkin("딥워크 완료")
-            self.assertEqual(ids, [2])
-            self.assertEqual(msg, "Good work!")
-
-        # Test Gemini response format
-        mock_gem = MagicMock()
-        mock_gem.status_code = 200
-        mock_gem.json.return_value = {
-            "candidates": [{"content": {"parts": [{"text": json.dumps({"matched_habit_ids": [6], "coaching_message": "Morning sun!"})}]}}]
-        }
-        with patch("requests.post", return_value=mock_gem):
-            ids, msg = LLMClient(provider="gemini", api_key="test-key").analyze_checkin("햇빛 산책")
-            self.assertEqual(ids, [6])
-            self.assertEqual(msg, "Morning sun!")
-
-        # Test API failure fallback to local NLP
-        with patch("requests.post", side_effect=RuntimeError("network down")):
-            ids, msg = LLMClient(provider="openai", api_key="test-key").analyze_checkin("dk")
-            self.assertEqual(ids, [])
-            self.assertIn("찾지 못했습니다", msg)
+    def test_realistic_conversational_inputs_across_4_languages(self):
+        cases = [
+            ("ko", "아침에 일어나자마자 햇빛 15분 쬐고 찬물 샤워했어", {6, 7}),
+            ("ko", "달리기 유산소 30분 뛰고 잠들기 전 스마트폰 멀리둠", {8, 10}),
+            ("en", "Read for 1 hour and wrote 5 things in my gratitude journal", {15, 17}),
+            ("en", "Did zone 2 cardio workout and put my phone away before bed", {8, 10}),
+            ("en", "Applied the 2-minute rule and meditated for 20 minutes", {12, 31}),
+            ("ja", "1時間読書して寝る前に感謝日記を5つ書いた", {15, 17}),
+            ("ja", "Zone 2の有酸素運動をして寝る前はスマホを見なかった", {8, 10}),
+            ("zh", "早上晒了15分钟太阳还洗了冷水澡", {6, 7}),
+            ("zh", "做完2分钟法则然后冥想20分钟", {12, 31}),
+        ]
+        for lang, text, expected_ids in cases:
+            nlp = LocalHabitNLP(lang=lang)
+            matched, msg = nlp.analyze_checkin(text, lang=lang)
+            self.assertTrue(
+                expected_ids.issubset(set(matched)),
+                f"[{lang}] '{text}' expected {expected_ids}, got {matched}",
+            )
+            self.assertTrue(bool(msg.strip()))
 
 
 class TestSQLiteAndBidirectionalSync(unittest.TestCase):
@@ -569,14 +563,30 @@ class TestFloatingWidgetUIRegression(unittest.TestCase):
         self.assertTrue(self.widget._keyword_help_win.winfo_exists())
         self.widget._keyword_help_win.destroy()
 
+        # Unified Growth Graph icon + Modern Minimal Theme & Lucide Stock checks
+        ico_p, png_p = get_app_icon_paths()
+        self.assertTrue(ico_p.is_file() and png_p.is_file())
+        tray_img = create_tray_icon_image()
+        self.assertEqual(tray_img.size, (64, 64))
+        self.assertTrue(hasattr(self.widget, "_app_icon_photo"))
+        self.assertEqual(THEME["bg"], "#09090B")
+        self.assertEqual(self.widget.cget_bg() if hasattr(self.widget, "cget_bg") else self.widget.c_bg, "#09090B")
+        lucide_svgs = list(get_lucide_dir().glob("*.svg"))
+        self.assertGreaterEqual(len(lucide_svgs), 25)
+        self.assertTrue((get_lucide_dir() / "LICENSE").is_file())
+        rendered_ico = render_lucide_icon("trending-up", size=24, color=THEME["green"])
+        self.assertEqual(rendered_ico.size, (24, 24))
+
         self.widget.open_bot_settings_dialog()
         bot_win = self.widget._bot_settings_win
         self.assertTrue(bot_win.winfo_exists())
         self.root.update()
         cards = bot_win._bot_cards
+        self.assertEqual(set(cards.keys()), {"telegram", "discord", "webhook"})
+        for card in cards.values():
+            self.assertEqual(card.cget("highlightbackground"), THEME["border"])
         self.assertLess(cards["telegram"].winfo_y(), cards["discord"].winfo_y())
         self.assertLess(cards["discord"].winfo_y(), cards["webhook"].winfo_y())
-        self.assertLess(cards["webhook"].winfo_y(), cards["llm"].winfo_y())
         bot_win.destroy()
 
         # Opacity horizontal slider live preview, cancel revert, and persist
@@ -851,23 +861,23 @@ class TestMultilingualAndLocaleSandbox(unittest.TestCase):
         for lang in ("ko", "en", "ja", "zh"):
             cat = get_habits_catalog(lang)
             self.assertEqual([h["id"] for h in cat], list(range(1, 36)))
-            llm = LLMClient(provider="mock", api_key=None, lang=lang)
+            nlp = LocalHabitNLP(lang=lang)
             for h in cat:
                 for kw in h["keywords"]:
-                    matched, msg = llm.analyze_checkin(f"Practiced {kw}", lang=lang)
+                    matched, msg = nlp.analyze_checkin(f"Practiced {kw}", lang=lang)
                     self.assertIn(h["id"], matched, f"[{lang}] Habit {h['id']} missed keyword '{kw}'")
                     self.assertTrue(bool(msg.strip()))
 
             for noise in noise_inputs:
                 if lang == "ko" and "why" in noise:
                     continue
-                matched, _ = llm.analyze_checkin(noise, lang=lang)
+                matched, _ = nlp.analyze_checkin(noise, lang=lang)
                 self.assertEqual(matched, [], f"[{lang}] Noise '{noise}' falsely matched {matched}")
 
         # Cross-language check-in support while UI language differs
-        en_ids, _ = LLMClient(lang="en").analyze_checkin("찬물샤워와 90분 딥워크 완료", lang="en")
+        en_ids, _ = LocalHabitNLP(lang="en").analyze_checkin("찬물샤워와 90분 딥워크 완료", lang="en")
         self.assertTrue({2, 7}.issubset(set(en_ids)))
-        ko_ids, _ = LLMClient(lang="ko").analyze_checkin("15m morning sunlight and cold shower", lang="ko")
+        ko_ids, _ = LocalHabitNLP(lang="ko").analyze_checkin("15m morning sunlight and cold shower", lang="ko")
         self.assertTrue({6, 7}.issubset(set(ko_ids)))
 
     def test_excel_multilingual_generation_and_cross_language_sync(self):

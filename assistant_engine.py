@@ -4,7 +4,7 @@
 =============================================================================
 1. 스마트 랜덤 넛지 (Nudge) 생성기 (시간대별 미완료 습관 스마트 필터링 & 4개 국어 지원)
 2. 3-상태 응답 상태 머신 ([✅ 완료], [🚀 지금 할게], [⏸️ 일단 보류])
-3. 자연어 일과 분석 및 습관 매핑 (Multilingual NLP / LLM)
+3. 100% 오프라인 다국어 자연어 일과 분석 및 습관 매핑 (Local Multilingual NLP)
 4. 윈도우 시작프로그램(Registry) 다국어 이름 동기화 컨트롤러
 =============================================================================
 """
@@ -14,7 +14,7 @@ import sys
 import random
 import datetime
 
-from ai_secretary import LLMClient
+from ai_secretary import LocalHabitNLP
 from i18n import tr, get_autostart_reg_name, ALL_AUTOSTART_REG_NAMES
 from i18n_habits import get_habits_catalog
 from i18n_personas import get_personas
@@ -45,10 +45,10 @@ def is_habit_suitable_for_hour(habit_id: int, hour: int) -> bool:
 
 
 class AssistantEngine:
-    def __init__(self, db_manager, llm_client=None):
+    def __init__(self, db_manager, nlp_client=None):
         self.db = db_manager
-        self._explicit_llm = llm_client
-        self.llm = llm_client or self._build_llm_from_settings()
+        self._explicit_nlp = nlp_client
+        self.nlp = nlp_client or LocalHabitNLP(lang=self.get_language())
         self.db.seed_habits(self.habits)
         if self.db.get_setting("migrated_excel_to_sqlite", "false") != "true":
             self.db.import_from_excel()
@@ -65,20 +65,10 @@ class AssistantEngine:
         """Re-seed SQLite habits master table for the active language."""
         self.db.seed_habits(self.habits)
 
-    def _build_llm_from_settings(self):
-        provider = (self.db.get_setting("llm_provider", "mock") or os.getenv("LLM_PROVIDER", "mock")).lower()
-        api_key = (
-            self.db.get_setting("llm_api_key", "")
-            or os.getenv("GROK_API_KEY")
-            or os.getenv("OPENAI_API_KEY")
-            or os.getenv("GEMINI_API_KEY")
-        )
-        return LLMClient(provider=provider, api_key=api_key, lang=self.get_language())
-
-    def _get_llm(self):
-        if self._explicit_llm:
-            return self._explicit_llm
-        return self._build_llm_from_settings()
+    def _get_nlp(self):
+        if self._explicit_nlp:
+            return self._explicit_nlp
+        return LocalHabitNLP(lang=self.get_language())
 
     def get_current_persona(self) -> dict:
         lang = self.get_language()
@@ -137,7 +127,7 @@ class AssistantEngine:
             "habit_id": selected["id"],
             "habit_name": selected["name"],
             "category": selected["category"],
-            "question": f"{persona['emoji']} [{persona['name']}]\n\"{question}\"",
+            "question": f"[{persona['name']}]\n\"{question}\"",
             "all_done": False,
             "persona_name": persona["name"],
             "persona_emoji": persona["emoji"],
@@ -158,15 +148,15 @@ class AssistantEngine:
                 self.db.sync_to_excel()
 
             praise = random.choice(persona["praise_templates"]).replace("{name}", h_name)
-            return {"status": "completed", "message": f"{persona['emoji']} [{persona['name']}]\n\"{praise}\""}
+            return {"status": "completed", "message": f"[{persona['name']}]\n\"{praise}\""}
 
         elif response_type == "doing_now":
             enc = random.choice(persona["doing_now_templates"]).replace("{name}", h_name)
-            return {"status": "doing_now", "message": f"{persona['emoji']} [{persona['name']}]\n\"{enc}\""}
+            return {"status": "doing_now", "message": f"[{persona['name']}]\n\"{enc}\""}
 
         elif response_type == "postponed":
             delay = random.choice(persona["postpone_templates"]).replace("{name}", h_name)
-            return {"status": "postponed", "message": f"{persona['emoji']} [{persona['name']}]\n\"{delay}\""}
+            return {"status": "postponed", "message": f"[{persona['name']}]\n\"{delay}\""}
 
         return {"status": "unknown", "message": tr("unknown_response", lang)}
 
@@ -178,11 +168,11 @@ class AssistantEngine:
         persona = self.get_current_persona()
         habits = self.habits
 
-        llm_client = self._get_llm()
+        nlp_client = self._get_nlp()
         try:
-            matched_ids, base_coaching = llm_client.analyze_checkin(text, lang=lang)
+            matched_ids, base_coaching = nlp_client.analyze_checkin(text, lang=lang)
         except TypeError:
-            matched_ids, base_coaching = llm_client.analyze_checkin(text)
+            matched_ids, base_coaching = nlp_client.analyze_checkin(text)
 
         checked_names = []
         for hid in matched_ids:
@@ -194,13 +184,13 @@ class AssistantEngine:
         if matched_ids:
             h_sample = checked_names[0] if checked_names else tr("default_habit_sample", lang)
             persona_coaching = (
-                f"{persona['emoji']} [{persona['name']}]\n"
+                f"[{persona['name']}]\n"
                 f"\"{random.choice(persona['praise_templates']).replace('{name}', h_sample)}\"\n\n"
-                f"💡 {base_coaching}"
+                f"{base_coaching}"
             )
         else:
             persona_coaching = (
-                f"{persona['emoji']} [{persona['name']}]\n"
+                f"[{persona['name']}]\n"
                 f"\"{base_coaching}\""
             )
 

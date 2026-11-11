@@ -9,6 +9,7 @@ bundling full 4-language (ko / en / ja / zh) support.
 """
 
 import argparse
+import os
 import sys
 import subprocess
 from pathlib import Path
@@ -20,6 +21,8 @@ from i18n import (
     get_app_description,
     PE_LOCALE_TABLE,
 )
+from app_icon import generate_icon_assets, get_app_icon_paths
+from ui_theme import get_lucide_dir
 
 # Set console encoding to UTF-8
 if sys.platform.startswith("win"):
@@ -99,6 +102,10 @@ def build(lang: str = None):
     build_dir = BASE_DIR / "build"
 
     version_file = generate_version_info_file(build_dir / f"version_info_{resolved_lang}.txt", resolved_lang)
+    ico_path, png_path = get_app_icon_paths()
+    if not ico_path.is_file() or not png_path.is_file():
+        ico_path, png_path = generate_icon_assets(BASE_DIR / "assets")
+    lucide_dir = get_lucide_dir()
 
     cmd = [
         sys.executable, "-m", "PyInstaller",
@@ -110,9 +117,16 @@ def build(lang: str = None):
         "--hidden-import", "i18n_personas",
         "--hidden-import", "bot_commands",
         "--hidden-import", "discord_bot",
+        "--hidden-import", "app_icon",
+        "--hidden-import", "ui_theme",
+        "--add-data", f"{ico_path}{os.pathsep}assets",
+        "--add-data", f"{png_path}{os.pathsep}assets",
+        "--add-data", f"{lucide_dir}{os.pathsep}assets/icons/lucide",
         "--specpath", str(build_dir),
         "--clean",
     ]
+    if sys.platform.startswith("win") and ico_path.is_file():
+        cmd.extend(["--icon", str(ico_path)])
     if sys.platform.startswith("win") and version_file.is_file():
         cmd.extend(["--version-file", str(version_file)])
     cmd.append(str(entry_script))
