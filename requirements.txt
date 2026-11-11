@@ -1,0 +1,5 @@
+openpyxl>=3.1.2
+requests>=2.31.0
+pystray>=0.19.5
+pillow>=10.0.0
+# 내장 경량 .env 로더 및 Telegram HTTP API 클라이언트 포함 (별도 설치 불필요)

@@ -1,0 +1,27 @@
+# Local SQLite database (auto-generated on startup; contains personal check-ins, tokens & channel IDs)
+*.db
+*.db-*
+life_os.db
+life_os.db-wal
+life_os.db-shm
+life_os.db-journal
+
+# Personal Excel workbooks (auto-generated on startup; contains habit history & AI bot logs)
+*.xlsx
+~$*.xlsx
+*_Fixed.xlsx
+
+# Environment & secrets
+.env
+*.env
+*.env.*
+!.env.example
+*.log
+
+# Python & PyInstaller artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.spec
