@@ -1,76 +1,78 @@
-# 🛠️ ALL-IN-ONE LIFE OS : 개발 히스토리 (Development History)
+# 🛠️ ALL-IN-ONE LIFE OS : Development History
 
-이 문서는 **"세계적 성취자들의 핵심 성공 습관을 엑셀 하나로 통합하고, AI 비서와 실시간으로 실천을 관리한다"** 는 아이디어에서 출발해, 데스크톱 플로팅 위젯 · 다국어 지원 · 개방형 모바일 봇 생태계까지 함께 단계적으로 다듬어 온 공동 개발 과정을 정리한 기록입니다.
+> 🌐 **Languages:** **🇺🇸 English** · [🇰🇷 한국어](DEVELOPMENT_HISTORY.ko.md) · [🇯🇵 日本語](DEVELOPMENT_HISTORY.ja.md) · [🇨🇳 简体中文](DEVELOPMENT_HISTORY.zh.md)
 
----
-
-## 📌 타임라인 및 단계별 진화 과정
-
-### Phase 1. 올인원 성공 습관 엑셀 & AI 비서 코어 구축
-* **배경:** 여러 서적·강연·프로토콜에 흩어진 핵심 루틴을 **7대 라이프 영역 × 5개 핵심 습관 = 35대 성공 습관** 체계로 정렬하고, 특정 폐쇄형 앱 대신 누구나 소유·분석할 수 있는 표준 엑셀(`.xlsx`) 중심 구조를 채택했습니다.
-* **구현 내용:**
-  * [`generate_excel.py`](generate_excel.py): 5개 시트(`📊 대시보드`, `🏆 성공인 습관DB`, `📅 일일트래커`, `📈 주간회고`, `🤖 AI비서 연동로그`) 자동 생성 및 100여 개 집계 수식에 `IFERROR`를 적용해 초기 빈 시트에서 `#DIV/0!` 오류를 원천 차단했습니다.
-  * [`REFERENCES.md`](REFERENCES.md): 35가지 일과 각각의 출처(저서·논문·강연)와 선정 근거를 체계적으로 문서화했습니다.
-  * [`ai_secretary.py`](ai_secretary.py): 자연어 일과 문장에서 다중 습관 키워드를 인식해 체크하고 페르소나 코칭을 생성하는 오프라인 NLP 엔진 및 선택적 LLM API 클라이언트(Grok / OpenAI / Gemini)를 구축했습니다.
+This document records the collaborative human–AI engineering journey behind **All-in-One Life OS**: starting from the goal of unifying 35 evidence-based habits into a single user-owned Excel workbook, and iteratively refining it into a multilingual Harness² desktop widget and open mobile bot ecosystem.
 
 ---
 
-### Phase 2. Google Research Harness² 응용 & Windows 플로팅 트레이 앱
-* **배경:** *"매일 엑셀 파일을 직접 열어 체크하는 마찰을 없애고, 바탕화면에 떠서 먼저 말을 걸어주는 가벼운 비서가 있으면 좋겠다"* 는 요구에 따라, Google Research **Harness²** 개념을 응용 소프트웨어 엔지니어링 규격([`HARNESS_SPEC.md`](HARNESS_SPEC.md))으로 치환했습니다.
-* **구현 내용:**
-  * **Storage Harness ([`database.py`](database.py)):** SQLite(`life_os.db`, WAL 모드)를 도입해 당일/1주일 한계를 넘어 **어제·과거·며칠 뒤(Date Traversal)** 타임라인을 자유롭게 기록하고, 엑셀·SQLite·위젯 간 3-Way 양방향 동기화를 구현했습니다.
-  * **Assistant Engine ([`assistant_engine.py`](assistant_engine.py)):** 4대 거인 롤모델 페르소나(앤드루 후버만, 워런 버핏, 일론 머스크 & Grok, 마르쿠스 아우렐리우스), 시간대별 스마트 넛지, `[✅ 완료]` · `[🚀 지금 할게!]` · `[⏸️ 일단 보류]` 3-상태 머신을 구축했습니다.
-  * **Desktop UI & OS Harness ([`floating_widget.py`](floating_widget.py), [`tray_manager.py`](tray_manager.py), [`hotkey_manager.py`](hotkey_manager.py), [`main_app.py`](main_app.py), [`build_exe.py`](build_exe.py)):** 반투명 플로팅 위젯, 시스템 트레이, `Ctrl+Shift+H` 글로벌 단축키, 차임벨·토스트 알림, 그리고 Python 미설치 Windows PC에서도 실행되는 단일 실행 파일(`LifeOS_Assistant_v2.exe`) 패키징을 완성했습니다.
+## 📌 Development Timeline & Phase Evolution
+
+### Phase 1. All-in-One Success Habits Excel & Core AI Assistant
+* **Context:** Organize high-impact daily routines scattered across books, research, and lectures into **7 Life Domains × 5 Core Habits = 35 Master Habits**, anchored in an open `.xlsx` workbook users actually own instead of a locked SaaS app.
+* **Implemented:**
+  * [`generate_excel.py`](generate_excel.py): Auto-generates a 5-sheet workbook (`📊 Dashboard`, `🏆 Habit Master DB`, `📅 Daily Tracker`, `📈 Weekly Review`, `🤖 AI Assistant Log` — localized per language) with `IFERROR` guards across ~100 summary/ratio formulas so blank initial sheets never display `#DIV/0!`.
+  * [`REFERENCES.md`](REFERENCES.md): Systematically documents primary books, papers, and mechanisms for all 35 habits.
+  * [`ai_secretary.py`](ai_secretary.py): Multi-habit offline NLP matcher plus optional official LLM API support (Grok / OpenAI / Gemini) generating persona-tailored coaching.
 
 ---
 
-### Phase 3. 실사용 피드백 기반 UX 정교화 & 디버깅
-실제 바탕화면에 띄워 사용하면서 발견한 세세한 UX·엣지 케이스를 하나씩 해결했습니다.
-* **위젯 개인화 & 레이아웃 버그 수정:**
-  * 위젯 표시 개수를 `1~35개` 중 자유롭게 고정하고 `[🎲 셔플]` / `[📌 핀]` 및 **`35개 전체 스크롤 모드`** 를 추가했습니다.
-  * 긴 코칭 메시지가 표시될 때 하단 자연어 입력창이 화면 아래로 밀려 잘리는 문제를 Tkinter `side=tk.BOTTOM` 우선 패킹 순서 개선으로 해결했습니다.
-* **오체크 방지 & 키워드 탐색 팝업:**
-  * `"dk"` 같은 무관한 단어가 우발적으로 습관 완료로 인식되지 않도록 공백 제거 정규화·어절 가드를 정비했고, `[?]` 버튼 클릭 시 검색 가능한 **35대 습관 키워드 가이드**가 열리도록 개선했습니다.
-* **테스트 샌드박스 격리:**
-  * 자동 테스트 실행 시 실제 사용자 DB/엑셀이 오염되지 않도록 `LIFE_OS_DATA_DIR` 환경 변수 및 `TemporaryDirectory()` 격리를 강제하고, `database.py` 파일 잠금(`wb.close()`) 누수까지 점검했습니다.
-* **직관적인 날짜·시간·투명도 UX 개선:**
-  * **동적 날짜 버튼 라벨:** 오늘(`diff == 0`)을 볼 때는 **`◀ 어제` / `오늘` / `내일 ▶`** 로, 다른 날짜로 이동하면 **`◀ 전날` / `오늘` / `다음날 ▶`** 로 바뀌어 날짜 문맥 혼동을 없앴습니다.
-  * **시간대별 넛지 필터 (`HABIT_ALLOWED_HOURS`):** 새벽(`00~04시`)에 저녁·취침 습관이 잘못 추천되던 조건 버그를 수정해, 시간이 포함된 습관(아침 자연광, 오전 의사결정, 새벽 기상, 저녁 셧다운, 취침 전 디톡스·감사일기 등)은 해당 시간대에만 묻고 일반 습관은 무작위 다양성을 유지하도록 재설계했습니다.
-  * **실시간 가로 투명도 슬라이더:** 추상적인 숫자(`0.5 ~ 1.0`) 입력칸을 **`30% ~ 100%` 가로 슬라이더(`tk.Scale`)** 로 교체해 드래그 즉시 위젯 투명도를 실시간 미리보고, 미저장 닫기(`✕`) 시 원래 투명도로 복원되도록 개선했습니다.
+### Phase 2. Google Research Harness² Adaptation & Windows Floating Tray App
+* **Context:** Eliminate daily friction of opening Excel manually by placing a lightweight proactive companion on the desktop, structured around the architectural rules in [`HARNESS_SPEC.md`](HARNESS_SPEC.md) (inspired by Google Research **Harness²**).
+* **Implemented:**
+  * **Storage Harness ([`database.py`](database.py)):** Introduced SQLite (`life_os.db`, WAL mode) enabling past/future timeline **Date Traversal** beyond single-week sheets, plus **3-Way Bidirectional Sync** across SQLite, Excel, and UI.
+  * **Assistant Engine ([`assistant_engine.py`](assistant_engine.py)):** Added 4 role-model personas (Andrew Huberman, Warren Buffett, Elon Musk & Grok, Marcus Aurelius), smart nudges, and the 3-state quick action loop (`[✅ Done]`, `[🚀 Do It Now!]`, `[⏸️ Later]`).
+  * **Desktop UI & OS Harness ([`floating_widget.py`](floating_widget.py), [`tray_manager.py`](tray_manager.py), [`hotkey_manager.py`](hotkey_manager.py), [`main_app.py`](main_app.py), [`build_exe.py`](build_exe.py)):** Translucent floating widget, system tray menu, global hotkey `Ctrl+Shift+H`, sound chime + Windows toast notifications, and standalone single-file packaging (`LifeOS_Assistant_v2.exe`) for PCs without Python installed.
 
 ---
 
-### Phase 4. 글로벌 4개 국어 통합 아키텍처
-* **배경:** 단일 한국어 사용자뿐 아니라 전 세계 사용자가 OS 언어에 맞춰 바로 쓸 수 있도록 전체 시스템을 다국어화했습니다.
-* **구현 내용:**
-  * [`i18n.py`](i18n.py), [`i18n_habits.py`](i18n_habits.py), [`i18n_personas.py`](i18n_personas.py): `ko` / `en` / `ja` / `zh` 4개 국어 UI, 35대 습관 키워드(교차 언어 인식 포함), 4인 페르소나, 4개 국어 엑셀 워크북 생성 및 시트 이름 호환 매핑(`_find_sheet`), 설정 내 실시간 UI·트레이 핫스위치, 그리고 OS 로캘별 `.exe` PE 메타데이터(`VSVersionInfo`)까지 통합했습니다.
+### Phase 3. Dogfooding-Driven UX Refinement & Bug Fixes
+Day-to-day desktop usage surfaced real UX bottlenecks and subtle bugs that were iteratively resolved:
+* **Widget Customization & Layout Clipping Fix:**
+  * Added configurable visible habit count (`1–35`), `[🎲 Shuffle]` / `[📌 Pin]`, and **full-35 scroll mode**.
+  * Fixed bottom natural-language check-in bar clipping on long coaching messages by enforcing `side=tk.BOTTOM` packing priority in Tkinter.
+* **False-Positive Protection & Searchable Keyword Popup:**
+  * Hardened whitespace normalization and word-boundary matching so unrelated short words (e.g., `"dk"`) never mis-trigger habits, and upgraded `[?]` into a searchable **35-Habit Keyword Guide** dialog.
+* **Test Sandbox Isolation:**
+  * Enforced `LIFE_OS_DATA_DIR` isolation and `TemporaryDirectory()` sandboxes so automated tests never touch real user `.db`/`.xlsx` files, and fixed workbook handle closing (`wb.close()`).
+* **Intuitive Date, Time-of-Day & Live Opacity Controls:**
+  * **Contextual Date Buttons:** Displays **`◀ Yesterday` / `Today` / `Tomorrow ▶`** when viewing today (`diff == 0`), switching dynamically to **`◀ Prev Day` / `Today` / `Next Day ▶`** on other dates to remove chronological ambiguity.
+  * **Time-Aware Nudge Filtering (`HABIT_ALLOWED_HOURS`):** Fixed a dawn (`00:00–04:59`) condition bug that mistakenly recommended bedtime/evening habits; time-anchored habits (morning sunlight, morning decisions, dawn writing, shutdown ritual, pre-bed detox/gratitude) now prompt only in appropriate hours while timeless habits keep varied randomization.
+  * **Real-Time Horizontal Opacity Slider:** Replaced raw float entry (`0.5–1.0`) with a **`30%–100%` horizontal slider (`tk.Scale`)** giving instant alpha preview and reverting cleanly if closed without saving (`✕`).
 
 ---
 
-### Phase 5. 개방형 모바일 봇 · LAN 웹훅 연동 & 보안·배포 가드
-* **설계 방향 논의:** 외부 메신저·자동화 채널 확장 과정에서 무료 사용자에게도 공식 봇 API가 열려 있는 개방형 생태계에 집중하기로 결정하고, 복잡하거나 제3자 서비스 약관 우려가 있는 비공식/폐쇄형 연동은 배제했습니다.
-* **구현 및 실기기 검증 내용:**
-  * **Telegram 봇 ([`telegram_bot.py`](telegram_bot.py)):** 외부 추가 설치 없이 HTTP Long-Polling 백그라운드 수신 구현 및 `@BotFather` 사칭 봇 예방 경고 카드 UI 반영.
-  * **Discord 내장 봇 ([`discord_bot.py`](discord_bot.py), [`bot_commands.py`](bot_commands.py)):** `discord.py`나 외부 터널 없이 순수 Python 표준 라이브러리 RFC 6455 TLS WebSocket(Gateway v10) + REST API 연동. 실제 연동 과정에서 확인된 Discord 최신 설정 경로(`⚙️ → </> 개발자 → 개발자 모드`)와 `Clyde` DM 차단 대응, `전용 Channel ID` 동작 방식을 정리했습니다.
-  * **Android & Wi-Fi 보조 iPhone 웹훅 ([`bot_bridge.py`](bot_bridge.py)):** 집 Wi-Fi 내 Android(`HTTP Request Shortcuts`)와 보조 iPhone 공기계(`단축어`) 실기기 테스트를 통해 확인된 **Windows `Public`→`Private` 네트워크 프로필/방화벽**, **`https://` → `http://` TLS 헤더 오류**, **`Parameters` → `Custom Text` (`application/json`)** 주의사항을 가이드에 반영했습니다.
-  * **UI 카드 우선순위 정렬:** 모바일 봇 설정창 카드 순서를 안내 순서(`Telegram → Discord → 로컬 웹훅 → LLM API`)와 일치시켰습니다.
-  * **빌드 & Git Push 보안 가드 ([`.gitignore`](.gitignore), [`build_exe.py`](build_exe.py)):** 개인 `*.db`, `*.xlsx`(체크인 이력 및 AI 연동 로그 포함), `.env`, `*.spec`, `build/`, `dist/`를 Git 추적에서 원천 배제하고, 빌드 시 `.exe` 내부 아카이브에 개인 데이터·토큰이 포함되지 않도록 자동 검증(`verify_clean_exe_bundle`)을 추가했습니다.
+### Phase 4. Global 4-Language Architecture (`en` / `ko` / `ja` / `zh`)
+* **Context:** Expanded from single-language Korean support to instant OS-locale detection and global multi-language usability.
+* **Implemented:**
+  * [`i18n.py`](i18n.py), [`i18n_habits.py`](i18n_habits.py), [`i18n_personas.py`](i18n_personas.py): Localized all UI strings, cross-language 35-habit keyword recognition, 4 personas, 4-language Excel generators and cross-language sheet resolution (`_find_sheet`), live Settings UI/Tray hot-switching, and localized Windows PE `VSVersionInfo` metadata inside [`build_exe.py`](build_exe.py).
 
 ---
 
-## 👥 공동 기여 및 역할 분담 (Contributors & Role Division)
+### Phase 5. Open Mobile Bots · LAN Webhook & Release Privacy Guards
+* **Scope Decision:** Focused exclusively on open platforms providing official bot APIs for free users (**Telegram**, **Discord**, **LAN HTTP Webhook**), deliberately excluding closed/unofficial messaging workarounds.
+* **Implemented & Real-Device Verified:**
+  * **Telegram Bot ([`telegram_bot.py`](telegram_bot.py)):** Zero-dependency HTTP Long-Polling worker plus `@BotFather` impersonation-warning UI card.
+  * **Discord Built-in Bot ([`discord_bot.py`](discord_bot.py), [`bot_commands.py`](bot_commands.py)):** Pure Python stdlib RFC 6455 TLS WebSocket (Gateway v10) + REST integration requiring no `discord.py` or tunnels; documented real portal paths (`⚙️ → </> Developer → Developer Mode`), `Clyde` DM restriction workarounds, and `Dedicated Channel ID` behavior.
+  * **Android & Wi-Fi Auxiliary iPhone Webhook ([`bot_bridge.py`](bot_bridge.py)):** Verified live on Android (`HTTP Request Shortcuts`) and Wi-Fi auxiliary iPhone (`Apple Shortcuts`), surfacing crucial setup notes: **Windows `Public` → `Private` network firewall**, **`http://` instead of `https://`** (preventing `unable to parse TLS packet header`), and **`Custom Text` (`application/json`)** with ASCII straight quotes.
+  * **Bot Dialog Card Ordering:** Aligned Settings dialog card order (`Telegram → Discord → Local Webhook → LLM API`) with the onboarding guide.
+  * **Build & Git Privacy Guards ([`.gitignore`](.gitignore), [`build_exe.py`](build_exe.py)):** Excluded personal `*.db`, `*.xlsx` (logs & history), `.env`, `*.spec`, `build/`, `dist/` from Git, and added automated post-build archive auditing (`verify_clean_exe_bundle`).
 
-이 프로젝트는 사람 개발자(**Product Owner / Reviewer**)와 AI 페어 프로그래머(**Implementation / Verification Partner**)가 역할을 명확히 나누어 반복 피드백(Human-in-the-loop) 방식으로 함께 구축했습니다.
+---
 
-| 기여자 | 역할 (Role) | 주요 담당 영역 (Owned Contributions) |
+## 👥 Contributors & Role Division
+
+This project was co-developed in a transparent human-in-the-loop workflow with clear ownership between the human Product Owner and the AI Pair Programmer:
+
+| Contributor | Role | Owned Contributions |
 | :--- | :--- | :--- |
-| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · Real-Device QA** | • **핵심 비전 & 도메인 설계:** 7대 라이프 영역 × 35대 성공 습관 프레임워크 선정, 폐쇄형 앱이 아닌 사용자 소유 엑셀(`.xlsx`) + 바탕화면 비서 구조 방향 설정<br>• **Harness² & 에이전트 방향성 제시:** Google Research Harness² 적용 제안, 롤모델 페르소나 콘셉트·시간대 넛지·자연어 체크인 워크플로우 정의<br>• **실사용 바탕화면 UX 비평 & 재설계 요구:** 오늘/다른 날짜 구분 동적 버튼(`◀ 어제/내일 ▶` ↔ `◀ 전날/다음날 ▶`), 새벽 시간대 저녁 습관 오추천 발견, 실시간 가로 투명도 슬라이더(`30%–100%`) UX 제안, 모바일 봇 UI 카드 순서 정리<br>• **실기기 & 보안 범위 의사결정:** 개방형 공식 API(Telegram · Discord · LAN 웹훅) 채택 및 비공식/폐쇄형 채널 제거, Android(`HTTP Request Shortcuts`) 및 보조 iPhone(Wi-Fi `단축어`) 실기기 검증 및 `http://` · `Custom Text JSON` 장애 리포트, 개인 데이터·토큰 비노출 보안 감사 기준 확정<br>• **릴리즈 검수 & 다국어 데모 방향:** 4개 국어 문서·현지화 데모 영상 구성 및 플랫폼 변경 고지 정책 지시 |
-| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · Full-Stack & QA Engineer** | • **코어 백엔드 & AI 엔진 구현:** [`generate_excel.py`](generate_excel.py), [`database.py`](database.py)(SQLite WAL · Date Traversal · 3-Way Sync), [`ai_secretary.py`](ai_secretary.py), [`assistant_engine.py`](assistant_engine.py) 구현 및 4대 페르소나 · `HABIT_ALLOWED_HOURS` 시간대 필터 로직 작성<br>• **데스크톱 위젯 & OS 통합:** [`floating_widget.py`](floating_widget.py), [`tray_manager.py`](tray_manager.py), [`hotkey_manager.py`](hotkey_manager.py), [`main_app.py`](main_app.py) UI/UX 구현, 동적 날짜 라벨, 실시간 `tk.Scale` 투명도 슬라이더, 검색 가능 `[?]` 키워드 팝업 제작<br>• **글로벌 4개 국어 i18n 아키텍처:** [`i18n.py`](i18n.py), [`i18n_habits.py`](i18n_habits.py), [`i18n_personas.py`](i18n_personas.py) (`ko`/`en`/`ja`/`zh`) UI·키워드·엑셀 시트 호환·실시간 언어 전환 및 `.exe` PE 메타데이터 통합<br>• **모바일 봇 & 웹훅 브릿지 구현:** [`telegram_bot.py`](telegram_bot.py), [`discord_bot.py`](discord_bot.py)(순수 Python RFC 6455 TLS WebSocket Gateway v10), [`bot_commands.py`](bot_commands.py), [`bot_bridge.py`](bot_bridge.py) 구현<br>• **패키징 · 프라이버시 가드 · 자동 검증:** [`build_exe.py`](build_exe.py)(PyInstaller 단일 `.exe` + `verify_clean_exe_bundle`), 격리 샌드박스 데모 영상(`assets/demo_*.gif/.mp4`) 캡처, [`test_regression_suite.py`](test_regression_suite.py)(25개 회귀·프라이버시 테스트) & [`test_e2e_scenarios.py`](test_e2e_scenarios.py)(7단계 E2E 시나리오) 구축, 다국어 가이드 문서 집필 |
+| **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · Real-Device QA** | • **Core Vision & Domain Design:** Curated the 7-domain × 35-habit framework and user-owned Excel (`.xlsx`) + desktop companion architecture<br>• **Harness² & Workflow Direction:** Initiated the Harness² software adaptation, 4 giant personas, smart nudging, and natural-language logging<br>• **Desktop UX Critique & Redesign:** Identified off-today date label ambiguity (`◀ Yesterday/Tomorrow ▶` vs `◀ Prev Day/Next Day ▶`), caught dawn bedtime-habit nudge bugs, proposed the real-time horizontal opacity slider (`30%–100%`), and ordered Bot UI cards<br>• **Real-Device Testing & Security Scope:** Chose open official APIs over closed channels, ran live Android (`HTTP Request Shortcuts`) & iPhone Wi-Fi (`Shortcuts`) checks discovering the `http://` / `Custom Text JSON` / Windows firewall gotchas, and enforced strict no-PII/no-token release criteria<br>• **Release QA & Localization Policy:** Directed 4-language demo recordings, localized documentation coverage, and external-platform change disclaimers |
+| **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · Full-Stack & QA Engineer** | • **Core Engine & Storage Implementation:** Built [`generate_excel.py`](generate_excel.py), [`database.py`](database.py) (SQLite WAL · Date Traversal · 3-Way Sync), [`ai_secretary.py`](ai_secretary.py), [`assistant_engine.py`](assistant_engine.py), personas, and `HABIT_ALLOWED_HOURS` filtering<br>• **Desktop UI & OS Integration:** Built [`floating_widget.py`](floating_widget.py), [`tray_manager.py`](tray_manager.py), [`hotkey_manager.py`](hotkey_manager.py), [`main_app.py`](main_app.py) including dynamic date labels, real-time `tk.Scale` opacity slider, and searchable `[?]` guide<br>• **4-Language i18n Architecture:** Implemented [`i18n.py`](i18n.py), [`i18n_habits.py`](i18n_habits.py), [`i18n_personas.py`](i18n_personas.py) (`en`/`ko`/`ja`/`zh`) UI, cross-language keywords, Excel sheet mapping, live hot-switch, and localized `.exe` metadata<br>• **Mobile Bots & Webhook Bridge:** Implemented [`telegram_bot.py`](telegram_bot.py), [`discord_bot.py`](discord_bot.py) (pure stdlib RFC 6455 TLS WebSocket Gateway v10), [`bot_commands.py`](bot_commands.py), and [`bot_bridge.py`](bot_bridge.py)<br>• **Packaging, Privacy Audit & Automated Tests:** Built [`build_exe.py`](build_exe.py) + `verify_clean_exe_bundle`, captured isolated sandbox demo assets (`assets/demo_*.gif/.mp4`), wrote [`test_regression_suite.py`](test_regression_suite.py) (25 tests) & [`test_e2e_scenarios.py`](test_e2e_scenarios.py) (7-step E2E), and authored multilingual docs |
 
 ---
 
-## 🔍 개발 과정에서 배운 핵심 엔지니어링 교훈
+## 🔍 Key Engineering Lessons Learned
 
-1. **도구·플랫폼 현실 검증의 가치:** 문서상 스펙과 실제 앱 화면·OS 환경(Windows 공용/개인 Wi-Fi 방화벽, Discord 최신 개발자 메뉴, Android 앱의 TLS 헤더/JSON 파라미터 동작)을 실기기에서 직접 검증했을 때 가장 가치 있는 가이드라인이 완성되었습니다.
-2. **프라이버시 바이 디자인(Privacy by Design):** 로컬 개인용 비서 프로젝트일수록 `.gitignore`와 빌드 스크립트(`verify_clean_exe_bundle`)에 자동 검증을 걸어 DB·엑셀·사설 IP·토큰 유출을 구조적으로 막아야 안심하고 릴리즈할 수 있습니다.
-3. **인간-AI 협업 시너지:** 사람이 실제 생활 속 사용감·우선순위·보안 경계를 정확히 짚어주고, AI가 아키텍처 구현·다국어 확장·샌드박스 자동 검증을 빠르게 실행·반증할 때 단일 개발 이상의 속도와 품질이 나옵니다.
+1. **Real-Device Validation Beats Assumptions:** Testing directly against Windows Wi-Fi firewall profiles, live Discord Developer Portal menus, and Android `HTTP Request Shortcuts` JSON/TLS behavior surfaced practical traps no static spec would catch.
+2. **Privacy by Design:** Personal productivity tools must guarantee structural separation between user data and distributable artifacts via `.gitignore` plus automated bundle verification (`verify_clean_exe_bundle`).
+3. **Human–AI Engineering Synergy:** Rapid architecture, multilingual scale, and sandboxed verification come together cleanly when human product judgment, UX intuition, and real-world QA steer AI implementation.

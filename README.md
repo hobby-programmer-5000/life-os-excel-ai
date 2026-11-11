@@ -105,7 +105,7 @@ python ai_secretary.py --review
 ## 📖 Development Story & Guides
 
 * [🛠️ Development History & Role Division (`DEVELOPMENT_HISTORY.md`)](DEVELOPMENT_HISTORY.md) — How this project evolved step-by-step from an Excel template to a multilingual Harness² desktop & bot ecosystem, including the full human–AI contributor breakdown.
-* [📚 Scientific Citations & Book References (`REFERENCES.md`)](REFERENCES.md)
+* [📚 Scientific Citations & Book References (`REFERENCES.md`)](REFERENCES.md) · [📐 Harness² Architecture Specification (`HARNESS_SPEC.md`)](HARNESS_SPEC.md)
 * [🤖 Telegram · Discord · Android/iPhone Setup Guide (`BOT_INTEGRATION_GUIDE.md`)](BOT_INTEGRATION_GUIDE.md)
 
 ---

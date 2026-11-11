@@ -10,14 +10,14 @@
 
 ![Life OS 日本語デモ](assets/demo_ja.gif)
 
-* 🎥 [MP4 動画版 (`assets/demo_ja.mp4`)](assets/demo_ja.mp4) *(※ 外部 Bot トークン設定画面はデモ動画から省略しています。Telegram / Discord / ローカル Webhook の連携手順は [BOT_INTEGRATION_GUIDE.md](BOT_INTEGRATION_GUIDE.md) をご覧ください。)*
+* 🎥 [MP4 動画版 (`assets/demo_ja.mp4`)](assets/demo_ja.mp4) *(※ 外部 Bot トークン設定画面はデモ動画から省略しています。Telegram / Discord / ローカル Webhook の連携手順は [BOT_INTEGRATION_GUIDE.ja.md](BOT_INTEGRATION_GUIDE.ja.md) をご覧ください。)*
 
 ---
 
 ## 🎯 主な特徴
 
 1. **7領域 × 5習慣 ＝ 35大成功習慣マスター:**  
-   ビジネス/生産性・身体/エネルギー・メンタル・創造/学習・人間関係/リーダーシップ・資産/財務・システム/習慣化の 35 ルーチンを体系化（出典一覧: [`REFERENCES.md`](REFERENCES.md)）。
+   ビジネス/生産性・身体/エネルギー・メンタル・創造/学習・人間関係/リーダーシップ・資産/財務・システム/習慣化の 35 ルーチンを体系化（出典一覧: [`REFERENCES.ja.md`](REFERENCES.ja.md)）。
 2. **ローカル完結 SQLite × Excel 5シート双方向同期 (`Life_OS_Successful_Habits.xlsx`):**  
    `📊 ダッシュボード`・`🏆 成功習慣DB`・`📅 日次トラッカー`・`📈 週次レビュー`・`🤖 AI連携ログ` をリアルタイム同期（全集計数式に `IFERROR` を適用済み）。
 3. **デスクトップ常駐ウィジェット (`LifeOS_Assistant_v2.exe`):**
@@ -50,9 +50,9 @@ python ai_secretary.py --checkin "朝15分日光を浴びて90分ディープワ
 
 ## 🔗 関連ドキュメント・検証
 
-* [🤖 Telegram / Discord / スマホショートカット連携ガイド (`BOT_INTEGRATION_GUIDE.md`)](BOT_INTEGRATION_GUIDE.md) *(※ 外部アプリ側のアップデートによるUI変更注意を含む)*
-* [🛠️ 開発ヒストリー・役割分担 (`DEVELOPMENT_HISTORY.md`)](DEVELOPMENT_HISTORY.md)
-* [📚 出典・参考文献一覧 (`REFERENCES.md`)](REFERENCES.md) · [📐 Harness² 設計仕様 (`HARNESS_SPEC.md`)](HARNESS_SPEC.md)
+* [🤖 Telegram / Discord / スマホショートカット連携ガイド (`BOT_INTEGRATION_GUIDE.ja.md`)](BOT_INTEGRATION_GUIDE.ja.md) *(※ 外部アプリ側のアップデートによるUI変更注意を含む)*
+* [🛠️ 開発ヒストリー・役割分担 (`DEVELOPMENT_HISTORY.ja.md`)](DEVELOPMENT_HISTORY.ja.md)
+* [📚 出典・参考文献一覧 (`REFERENCES.ja.md`)](REFERENCES.ja.md) · [📐 Harness² 設計仕様 (`HARNESS_SPEC.ja.md`)](HARNESS_SPEC.ja.md)
 * 個人データ（`*.db`, `*.xlsx`, `.env`, `*.spec`, `build/`, `dist/`）は `.gitignore` と `build_exe.py` のアーカイブ検証により除外されています。
 
 ---

@@ -10,14 +10,14 @@
 
 ![Life OS 简体中文演示](assets/demo_zh.gif)
 
-* 🎥 [MP4 高清视频 (`assets/demo_zh.mp4`)](assets/demo_zh.mp4) *(※ 演示视频略去了外部 Bot 令牌配置画面；Telegram · Discord · 局域网 Webhook 配置方法请参阅 [BOT_INTEGRATION_GUIDE.md](BOT_INTEGRATION_GUIDE.md)。)*
+* 🎥 [MP4 高清视频 (`assets/demo_zh.mp4`)](assets/demo_zh.mp4) *(※ 演示视频略去了外部 Bot 令牌配置画面；Telegram · Discord · 局域网 Webhook 配置方法请参阅 [BOT_INTEGRATION_GUIDE.zh.md](BOT_INTEGRATION_GUIDE.zh.md)。)*
 
 ---
 
 ## 🎯 核心亮点
 
 1. **7大人生领域 × 5项日常原则 = 35项科学成功习惯:**  
-   涵盖商业效率、身体能量、心理思维、创造学习、人际领导力、财富理财与系统日常（完整文献来源见 [`REFERENCES.md`](REFERENCES.md)）。
+   涵盖商业效率、身体能量、心理思维、创造学习、人际领导力、财富理财与系统日常（完整文献来源见 [`REFERENCES.zh.md`](REFERENCES.zh.md)）。
 2. **本地 SQLite 与 5表全自动公式 Excel 双向同步 (`Life_OS_Successful_Habits.xlsx`):**  
    `📊 仪表盘`、`🏆 成功习惯库`、`📅 每日追踪表`、`📈 每周复盘`、`🤖 AI助手日志` 实时联动，所有除法/均值公式均内置 `IFERROR` 防报错。
 3. **轻量化桌面悬浮助手 (`LifeOS_Assistant_v2.exe`):**
@@ -50,9 +50,9 @@ python ai_secretary.py --checkin "早上晒太阳15分钟，完成90分钟深度
 
 ## 🔗 文档与隐私保护
 
-* [🤖 Telegram / Discord / 手机快捷指令联动指南 (`BOT_INTEGRATION_GUIDE.md`)](BOT_INTEGRATION_GUIDE.md) *(含外部平台更新导致设置界面变化的提示说明)*
-* [🛠️ 项目演进、开发历程与分工 (`DEVELOPMENT_HISTORY.md`)](DEVELOPMENT_HISTORY.md)
-* [📚 科学文献与书籍参考 (`REFERENCES.md`)](REFERENCES.md) · [📐 Harness² 架构规范 (`HARNESS_SPEC.md`)](HARNESS_SPEC.md)
+* [🤖 Telegram / Discord / 手机快捷指令联动指南 (`BOT_INTEGRATION_GUIDE.zh.md`)](BOT_INTEGRATION_GUIDE.zh.md) *(含外部平台更新导致设置界面变化的提示说明)*
+* [🛠️ 项目演进、开发历程与分工 (`DEVELOPMENT_HISTORY.zh.md`)](DEVELOPMENT_HISTORY.zh.md)
+* [📚 科学文献与书籍参考 (`REFERENCES.zh.md`)](REFERENCES.zh.md) · [📐 Harness² 架构规范 (`HARNESS_SPEC.zh.md`)](HARNESS_SPEC.zh.md)
 * 个人数据文件（`*.db`, `*.xlsx`, `.env`, `*.spec`, `build/`, `dist/`）均已在 `.gitignore` 中严格屏蔽，且 `build_exe.py` 内置自动打包内容审计 (`verify_clean_exe_bundle`)。
 
 ---

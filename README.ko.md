@@ -10,7 +10,7 @@
 
 ![Life OS 한국어 데모](assets/demo_ko.gif)
 
-* 🎥 [MP4 고화질 데모 영상 (`assets/demo_ko.mp4`)](assets/demo_ko.mp4) *(※ 봇 토큰 등 개인 연동 화면은 데모 영상에서 생략했으며, Telegram · Discord · LAN 웹훅 설정은 [BOT_INTEGRATION_GUIDE.md](BOT_INTEGRATION_GUIDE.md) 에서 확인하실 수 있습니다.)*
+* 🎥 [MP4 고화질 데모 영상 (`assets/demo_ko.mp4`)](assets/demo_ko.mp4) *(※ 봇 토큰 등 개인 연동 화면은 데모 영상에서 생략했으며, Telegram · Discord · LAN 웹훅 설정은 [BOT_INTEGRATION_GUIDE.ko.md](BOT_INTEGRATION_GUIDE.ko.md) 에서 확인하실 수 있습니다.)*
 
 ---
 
@@ -23,7 +23,7 @@
 3. **바탕화면 능동형 비서 · 다국어 · 개방형 모바일 봇 확장**  
    단독 실행 파일(`LifeOS_Assistant_v2.exe`), 실시간 투명도 가로 슬라이더, 시간대별 스마트 넛지, 그리고 Telegram·Discord·Android/Wi-Fi 웹훅까지 하나로 통합했습니다.
 
-> 📚 **35대 일과 선정 근거 및 전체 참고문헌:** [`REFERENCES.md`](REFERENCES.md) · **공동 개발 과정 기록:** [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md)
+> 📚 **35대 일과 선정 근거 및 전체 참고문헌:** [`REFERENCES.ko.md`](REFERENCES.ko.md) · **공동 개발 과정 기록:** [`DEVELOPMENT_HISTORY.ko.md`](DEVELOPMENT_HISTORY.ko.md)
 
 ---
 
@@ -33,7 +33,7 @@
 * **데스크톱 UI & 빌드:** [`main_app.py`](main_app.py) · [`floating_widget.py`](floating_widget.py) · [`tray_manager.py`](tray_manager.py) · [`hotkey_manager.py`](hotkey_manager.py) · [`build_exe.py`](build_exe.py)
 * **4개 국어 지원 (`ko/en/ja/zh`):** [`i18n.py`](i18n.py) · [`i18n_habits.py`](i18n_habits.py) · [`i18n_personas.py`](i18n_personas.py)
 * **모바일 봇 & 웹훅 브릿지:** [`telegram_bot.py`](telegram_bot.py) · [`discord_bot.py`](discord_bot.py) · [`bot_commands.py`](bot_commands.py) · [`bot_bridge.py`](bot_bridge.py)
-* **문서 & 검증 스위트:** [`DEVELOPMENT_HISTORY.md`](DEVELOPMENT_HISTORY.md) · [`REFERENCES.md`](REFERENCES.md) · [`HARNESS_SPEC.md`](HARNESS_SPEC.md) · [`BOT_INTEGRATION_GUIDE.md`](BOT_INTEGRATION_GUIDE.md) · [`test_regression_suite.py`](test_regression_suite.py) · [`test_e2e_scenarios.py`](test_e2e_scenarios.py)
+* **문서 & 검증 스위트:** [`DEVELOPMENT_HISTORY.ko.md`](DEVELOPMENT_HISTORY.ko.md) · [`REFERENCES.ko.md`](REFERENCES.ko.md) · [`HARNESS_SPEC.ko.md`](HARNESS_SPEC.ko.md) · [`BOT_INTEGRATION_GUIDE.ko.md`](BOT_INTEGRATION_GUIDE.ko.md) · [`test_regression_suite.py`](test_regression_suite.py) · [`test_e2e_scenarios.py`](test_e2e_scenarios.py)
 
 ---
 
@@ -75,7 +75,7 @@ python main_app.py
 
 ### 방법 C: 모바일 봇 & 웹훅 연동 (`⚙️ 설정 → 🌐 모바일 봇/API 연동...`)
 * **Telegram 봇** · **Discord 내장 봇** · **Android `HTTP Request Shortcuts` · 보조 iPhone 공기계(Wi-Fi `단축어`)** 지원
-* 상세 설정, `@BotFather` 사칭 봇 주의사항, Android `http://` / `Custom Text JSON` 팁, **플랫폼 업데이트에 따른 메뉴 변경 가능성 안내**는 [`BOT_INTEGRATION_GUIDE.md`](BOT_INTEGRATION_GUIDE.md) 를 참고하세요.
+* 상세 설정, `@BotFather` 사칭 봇 주의사항, Android `http://` / `Custom Text JSON` 팁, **플랫폼 업데이트에 따른 메뉴 변경 가능성 안내**는 [`BOT_INTEGRATION_GUIDE.ko.md`](BOT_INTEGRATION_GUIDE.ko.md) 를 참고하세요.
 * 개인 DB(`*.db`), 엑셀(`*.xlsx`), `.env`, 빌드 산출물은 `.gitignore` 및 `build_exe.py` 보안 검사(`verify_clean_exe_bundle`)로 Git 푸시 및 `.exe` 번들에서 자동 제외됩니다.
 
 ---
@@ -87,5 +87,5 @@ python main_app.py
 | **[hobby-programmer-5000](https://github.com/hobby-programmer-5000)** | **Product Owner · Domain Architect · 실기기 QA** | 35대 성공 습관 프레임워크 & 엑셀 중심 아키텍처 기획, Harness² 방향 제시, 실사용 바탕화면·모바일 실기기 피드백(동적 날짜 라벨, 시간대별 넛지 필터, 실시간 투명도 슬라이더, 봇 UI 정렬), 개방형 API 범위 및 프라이버시 기준 결정 |
 | **[Gemini (Antigravity)](https://github.com/gemini-code-assist)** | **AI Pair Programmer · 구현 · 검증 엔지니어** | Python 코어 · SQLite WAL 3-Way Sync · 4대 페르소나 엔진, 플로팅 위젯 & 트레이, 4개 국어 i18n, Telegram/Discord/웹훅 브릿지, `.exe` 빌드 프라이버시 가드, 25개 회귀·7단계 E2E 테스트, 샌드박스 데모 영상 및 다국어 문서 작성 |
 
-* [🛠️ 단계별 개발 히스토리 및 역할 분담 상세 (`DEVELOPMENT_HISTORY.md`)](DEVELOPMENT_HISTORY.md)
-* [📚 35대 습관 출처·논문·서적 레퍼런스 (`REFERENCES.md`)](REFERENCES.md) · [📐 Harness² 설계 규격 (`HARNESS_SPEC.md`)](HARNESS_SPEC.md)
+* [🛠️ 단계별 개발 히스토리 및 역할 분담 상세 (`DEVELOPMENT_HISTORY.ko.md`)](DEVELOPMENT_HISTORY.ko.md)
+* [📚 35대 습관 출처·논문·서적 레퍼런스 (`REFERENCES.ko.md`)](REFERENCES.ko.md) · [📐 Harness² 설계 규격 (`HARNESS_SPEC.ko.md`)](HARNESS_SPEC.ko.md)
