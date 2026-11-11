@@ -30,10 +30,30 @@ if sys.platform.startswith("win"):
         pass
 
 
+def _log_boot_error(exc: Exception):
+    """Persist startup tracebacks when --noconsole frozen launches fail before UI init."""
+    try:
+        import datetime
+        import traceback
+        from database import resolve_base_dir
+
+        log_path = resolve_base_dir() / "life_os_boot.log"
+        stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(log_path, "a", encoding="utf-8") as fh:
+            fh.write(f"[{stamp}] Startup failure: {exc}\n{traceback.format_exc()}\n")
+    except Exception:
+        pass
+
+
 def main():
     # 1. Initialize Core Engine & Database
     db = DatabaseManager()
     engine = AssistantEngine(db)
+    try:
+        from assistant_engine import WindowsAutostartManager
+        WindowsAutostartManager.sync_autostart_if_enabled(db)
+    except Exception as exc:
+        _log_boot_error(exc)
 
     # 2. Initialize Tkinter Root
     root = tk.Tk()

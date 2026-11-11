@@ -1472,8 +1472,8 @@ class FloatingAssistantWidget:
             self.db.set_setting("persona", sel_key)
 
             enable_auto = var_autostart.get()
-            WindowsAutostartManager.set_autostart(enable_auto, lang=new_lang)
-            self.db.set_setting("autostart_enabled", "true" if enable_auto else "false")
+            ok_auto, _ = WindowsAutostartManager.set_autostart(enable_auto, lang=new_lang)
+            self.db.set_setting("autostart_enabled", "true" if (enable_auto and ok_auto) else "false")
             self.db.set_setting("close_to_tray", "true" if var_tray.get() else "false")
             self.db.set_setting("always_on_top", "true" if var_top.get() else "false")
             self.db.set_setting("sound_enabled", "true" if var_sound.get() else "false")

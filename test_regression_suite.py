@@ -260,6 +260,84 @@ class TestSQLiteAndBidirectionalSync(unittest.TestCase):
         finally:
             sys.platform = orig_p
 
+    def test_windows_autostart_quoting_and_self_heal_sandbox(self):
+        """Windows Run 레지스트리의 공백/한글 경로 따옴표 래핑 및 StartupApproved/자가복구 검증."""
+        spaced_exe = r"C:\Users\demo\Music\내가 제작\LifeOS_Assistant_v2.exe"
+        formatted = WindowsAutostartManager.format_autostart_command(spaced_exe)
+        self.assertEqual(formatted, f'"{spaced_exe}"')
+
+        if not sys.platform.startswith("win"):
+            return
+
+        # 1. Windows CommandLineToArgvW 파싱 차이 검증 (따옴표 누락 vs 적용)
+        import ctypes
+        shell32 = ctypes.windll.shell32
+        shell32.CommandLineToArgvW.restype = ctypes.POINTER(ctypes.c_wchar_p)
+        shell32.CommandLineToArgvW.argtypes = [ctypes.c_wchar_p, ctypes.POINTER(ctypes.c_int)]
+        argc_bad = ctypes.c_int()
+        argv_bad = shell32.CommandLineToArgvW(spaced_exe, ctypes.byref(argc_bad))
+        self.assertEqual(argc_bad.value, 2)
+        ctypes.windll.kernel32.LocalFree(argv_bad)
+
+        argc_ok = ctypes.c_int()
+        argv_ok = shell32.CommandLineToArgvW(formatted, ctypes.byref(argc_ok))
+        self.assertEqual(argc_ok.value, 1)
+        self.assertEqual(argv_ok[0], spaced_exe)
+        ctypes.windll.kernel32.LocalFree(argv_ok)
+
+        # 2. 실제 winreg 격리 샌드박스 서브키에서 등록/해제/TaskManager비활성/레거시 무따옴표 자가복구 검증
+        import winreg
+        sandbox_run = rf"Software\LifeOS_Sandbox_Test_{os.getpid()}\Run"
+        sandbox_app = rf"Software\LifeOS_Sandbox_Test_{os.getpid()}\StartupApproved"
+        sandbox_root = rf"Software\LifeOS_Sandbox_Test_{os.getpid()}"
+        sandbox_db = DatabaseManager(db_path=self.tmp / "autostart_sandbox.db")
+        sandbox_db.set_setting("language", "ko")
+
+        try:
+            # legacy unquoted entry + db="false" -> frozen self-heal repairs quotes & StartupApproved
+            with winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, sandbox_run, 0, winreg.KEY_SET_VALUE) as k:
+                winreg.SetValueEx(k, "LifeOS_습관비서", 0, winreg.REG_SZ, spaced_exe)
+
+            with patch.object(sys, "frozen", True, create=True), \
+                 patch.object(sys, "executable", spaced_exe):
+                ok_sync, _ = WindowsAutostartManager.sync_autostart_if_enabled(
+                    sandbox_db,
+                    lang="ko",
+                    reg_key_override=sandbox_run,
+                    approved_key_override=sandbox_app,
+                )
+            self.assertTrue(ok_sync)
+            reg_name, reg_val = WindowsAutostartManager.get_registered_autostart(reg_key_override=sandbox_run)
+            self.assertEqual(reg_name, "LifeOS_습관비서")
+            self.assertEqual(reg_val, f'"{spaced_exe}"')
+            self.assertTrue(WindowsAutostartManager.is_autostart_enabled(sandbox_run, sandbox_app))
+            self.assertEqual(sandbox_db.get_setting("autostart_enabled"), "true")
+
+            # Task Manager StartupApproved Disabled (0x03...) -> respected, not clobbered
+            with winreg.CreateKeyEx(winreg.HKEY_CURRENT_USER, sandbox_app, 0, winreg.KEY_SET_VALUE) as ak:
+                winreg.SetValueEx(ak, "LifeOS_습관비서", 0, winreg.REG_BINARY, b"\x03" + b"\x00" * 11)
+            self.assertFalse(WindowsAutostartManager.is_autostart_enabled(sandbox_run, sandbox_app))
+            with patch.object(sys, "frozen", True, create=True), \
+                 patch.object(sys, "executable", spaced_exe):
+                ok_dis, reason = WindowsAutostartManager.sync_autostart_if_enabled(
+                    sandbox_db, lang="ko", reg_key_override=sandbox_run, approved_key_override=sandbox_app
+                )
+            self.assertFalse(ok_dis)
+            self.assertEqual(reason, "disabled-by-windows")
+
+            # Disable inside app cleans both keys
+            ok_off, _ = WindowsAutostartManager.set_autostart(
+                False, lang="ko", reg_key_override=sandbox_run, approved_key_override=sandbox_app
+            )
+            self.assertTrue(ok_off)
+            self.assertIsNone(WindowsAutostartManager.get_registered_autostart(reg_key_override=sandbox_run)[0])
+        finally:
+            for sub in (sandbox_run, sandbox_app, sandbox_root):
+                try:
+                    winreg.DeleteKey(winreg.HKEY_CURRENT_USER, sub)
+                except OSError:
+                    pass
+
 
 class TestBotConnectionsRegression(unittest.TestCase):
     """4. HTTP 웹훅 브릿지 & 텔레그램 봇 핸들러 (+ 실서버 연결) 테스트"""
