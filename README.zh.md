@@ -33,7 +33,9 @@
 ## 🚀 快速开始
 
 ### 方式 A：Windows 免安装独立程序 (`.exe`)
-从 GitHub **Releases** 下载 `LifeOS_Assistant_v2.exe` 直接双击运行（无需安装 Python，首次运行自动初始化本地数据库和 Excel）。
+从 GitHub **[Releases](https://github.com/hobby-programmer-5000/life-os-excel-ai/releases)** 下载 `LifeOS_Assistant_v2.exe` 直接双击运行（无需安装 Python，首次运行在同目录自动初始化本地数据库和 Excel）。
+
+> **Windows SmartScreen 与哈希校验说明：** 本程序为无付费商业签名的个人开源软件，首次运行时可能会弹出 *"Windows 已保护你的电脑"* 提示（点击 `更多信息` → `仍要运行` 即可）。您可通过发布页公布的 SHA-256 校验和（`certutil -hashfile LifeOS_Assistant_v2.exe SHA256`）核对文件完整性，或使用 [`build_exe.py`](build_exe.py) 从源码自行编译。
 
 ### 方式 B：从源码运行（Windows / macOS / Linux）
 ```bash

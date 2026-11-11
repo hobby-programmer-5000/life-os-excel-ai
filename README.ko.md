@@ -63,7 +63,9 @@
 ## 🚀 실행 방법 & 모바일 봇 연동
 
 ### 방법 A: Windows 단독 실행 파일 (`.exe`)
-GitHub **Releases**에서 `LifeOS_Assistant_v2.exe`를 내려받아 바로 실행하세요(Python 불필요). 첫 실행 시 `life_os.db`와 `Life_OS_Successful_Habits.xlsx`가 자동 생성됩니다.
+GitHub **[Releases](https://github.com/hobby-programmer-5000/life-os-excel-ai/releases)**에서 `LifeOS_Assistant_v2.exe`를 내려받아 바로 실행하세요(Python 불필요). 첫 실행 시 실행 파일과 같은 폴더에 `life_os.db`와 `Life_OS_Successful_Habits.xlsx`가 자동 생성됩니다.
+
+> **Windows SmartScreen & 무결성 확인 안내:** 유료 코드 서명 인증서가 없는 순수 오픈소스 `.exe`이므로 첫 실행 시 *"Windows의 PC 보호"* 창이 표시될 수 있습니다(`추가 정보` → `실행`). 릴리즈 노트에 게시된 SHA-256 체크섬(`certutil -hashfile LifeOS_Assistant_v2.exe SHA256`)으로 파일 무결성을 대조하거나 [`build_exe.py`](build_exe.py)로 소스에서 직접 빌드해 사용하실 수 있습니다.
 
 ### 방법 B: 소스 코드 실행 (Windows / macOS / Linux)
 ```bash

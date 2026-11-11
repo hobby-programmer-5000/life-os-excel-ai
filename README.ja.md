@@ -33,7 +33,9 @@
 ## 🚀 クイックスタート
 
 ### 方法 A: Windows 単独実行ファイル (`.exe`)
-GitHub **Releases** から `LifeOS_Assistant_v2.exe` をダウンロードしてダブルクリックするだけで起動します（Python 不要・初回起動時に DB と Excel を自動生成）。
+GitHub **[Releases](https://github.com/hobby-programmer-5000/life-os-excel-ai/releases)** から `LifeOS_Assistant_v2.exe` をダウンロードしてダブルクリックするだけで起動します（Python 不要・初回起動時に同一フォルダへ DB と Excel を自動生成）。
+
+> **Windows SmartScreen ＆ 整合性確認:** 有料コード署名証明書を持たない個人オープンソース製バイナリのため、初回起動時に「Windows によって PC が保護されました」と表示される場合があります（「詳細情報」→「実行」）。各リリースの SHA-256 ハッシュ（`certutil -hashfile LifeOS_Assistant_v2.exe SHA256`）で検証するか、[`build_exe.py`](build_exe.py) でソースから直接ビルドできます。
 
 ### 方法 B: ソースコードから実行（Windows / macOS / Linux）
 ```bash

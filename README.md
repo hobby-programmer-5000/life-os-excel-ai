@@ -74,8 +74,10 @@
 ## 🚀 Quick Start (Windows / macOS / Linux)
 
 ### Option A: Standalone Windows Executable (`.exe`)
-Download **`LifeOS_Assistant_v2.exe`** from GitHub **Releases** (or build locally with `python build_exe.py`).  
-No Python installation required — double-click to launch; `life_os.db` and `Life_OS_Successful_Habits.xlsx` are automatically created on first run.
+Download **`LifeOS_Assistant_v2.exe`** from GitHub **[Releases](https://github.com/hobby-programmer-5000/life-os-excel-ai/releases)** (or build locally from source with `python build_exe.py`).  
+No Python installation required — double-click to launch; `life_os.db` and `Life_OS_Successful_Habits.xlsx` are automatically created beside the executable on first run.
+
+> **Windows SmartScreen & Integrity Note:** Because this independent open-source binary is not signed with a paid EV/OV certificate, Windows SmartScreen may show *"Windows protected your PC"* on first launch (`More info` → `Run anyway`). You can verify file integrity against the SHA-256 hash listed in the release notes (`certutil -hashfile LifeOS_Assistant_v2.exe SHA256`) or inspect and build directly from source via [`build_exe.py`](build_exe.py).
 
 ### Option B: Run from Source
 ```bash
